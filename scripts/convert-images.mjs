@@ -11,8 +11,12 @@ const GOUT = path.join(OUT, 'gallery');
 mkdirSync(OUT, { recursive: true });
 mkdirSync(GOUT, { recursive: true });
 
-const Q = { quality: 82, effort: 6 };
-const QHI = { quality: 88, effort: 6 };
+// General assets: 92 keeps WebP well under the source JPEGs while staying
+// visually lossless at the sizes they render.
+const Q = { quality: 92, effort: 6 };
+// Hero, title plate and the owner shot run at 100 - they are the largest
+// things on screen and the ones worth the bytes.
+const QHI = { quality: 100, effort: 6 };
 const kb = (n) => (n / 1024).toFixed(0) + 'KB';
 
 // Service card thumbs sit above the card body at 4:3.
@@ -206,7 +210,7 @@ for (const [prefix, cat, slug] of gallery) {
   // Larger copy for the lightbox - only fetched when a photo is opened.
   const f = await sharp(src)
     .resize({ width: 1200, withoutEnlargement: true })
-    .webp({ quality: 76, effort: 6 })
+    .webp(Q)
     .toFile(path.join(GOUT, 'full', to));
 
   console.log(

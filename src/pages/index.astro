@@ -72,7 +72,7 @@ const services = servicesData.services.slice(0, 8);
                 data-offset={i}
               >
                 <img class="card-img is-on" src={(s.images ?? [s.image])[0]} alt="" loading="lazy" width="800" height="600" />
-                <img class="card-img card-img--next" alt="" aria-hidden="true" width="800" height="600" />
+                <img class="card-img card-img--next" alt="" aria-hidden="true" loading="lazy" width="800" height="600" />
               </span>
               <span class="service-card-body">
                 <Hex icon={s.icon} size={24} />
@@ -189,7 +189,7 @@ const services = servicesData.services.slice(0, 8);
     <div class="container">
       <div class="about-grid">
         <div class="about-media">
-          <img src={home.about_image} alt="Inside The Shop Music City" loading="lazy" width="1870" height="841" />
+          <img src={home.about_image} alt="Lifted Ford Super Duty built at The Shop Music City" loading="lazy" width="1440" height="1030" />
         </div>
 
         <div class="about-copy">
@@ -237,6 +237,92 @@ const services = servicesData.services.slice(0, 8);
   // Service cards cross-dissolve through the owner's ranked shots for that
   // service. Two stacked <img> layers so the swap never flashes, and each card
   // is offset so the grid doesn't change all at once.
+  // The favourites rail drifts left on its own. It scrolls the real container
+  // rather than transforming the track, so dragging, wheeling and the
+  // scrollbar all keep working; the cards are duplicated once so the wrap is
+  // seamless. Hovering or touching it pauses the drift.
+  const wireFavRail = () => {
+    const rail = document.querySelector<HTMLElement>('[data-rail]');
+    const track = rail?.querySelector<HTMLElement>('.fav-track');
+    if (!rail || !track || rail.dataset.drifting) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    rail.dataset.drifting = '1';
+
+    // clone once for the seamless wrap
+    const originals = Array.from(track.children) as HTMLElement[];
+    const clones: HTMLElement[] = [];
+    originals.forEach((node) => {
+      const copy = node.cloneNode(true) as HTMLElement;
+      copy.setAttribute('aria-hidden', 'true');
+      copy.tabIndex = -1;
+      track.appendChild(copy);
+      clones.push(copy);
+    });
+
+    const SPEED = 22; // px per second - a slow drift, not a carousel
+    let paused = false;
+    let idleTimer = 0;
+    let frame = 0;
+    let last = 0;
+    // scrollLeft reads back as an integer, so sub-pixel steps would round away
+    // to nothing every frame. The true position is kept here as a float.
+    let pos = rail.scrollLeft;
+
+    // One period is the distance from an original to its clone. Half of
+    // scrollWidth is not the same thing - that also carries the rail's
+    // padding and half a gap, which would jump the wrap by ~30px.
+    const period = () => clones[0].offsetLeft - originals[0].offsetLeft;
+
+    const step = (now: number) => {
+      const dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
+      last = now;
+
+      if (!paused) {
+        pos += SPEED * dt;
+        const p = period();
+        if (p > 0 && pos >= p) pos -= p;
+        rail.scrollLeft = pos;
+      } else {
+        // stay in sync with wherever the reader dragged it
+        pos = rail.scrollLeft;
+      }
+      frame = requestAnimationFrame(step);
+    };
+
+    const hold = (ms: number) => {
+      paused = true;
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => {
+        paused = false;
+      }, ms);
+    };
+
+    rail.addEventListener('pointerenter', () => {
+      paused = true;
+      window.clearTimeout(idleTimer);
+    });
+    rail.addEventListener('pointerleave', () => {
+      paused = false;
+    });
+    rail.addEventListener('focusin', () => {
+      paused = true;
+    });
+    rail.addEventListener('focusout', () => {
+      paused = false;
+    });
+    // a manual flick or wheel takes over, then the drift resumes
+    rail.addEventListener('wheel', () => hold(2500), { passive: true });
+    rail.addEventListener('touchstart', () => hold(3500), { passive: true });
+
+    frame = requestAnimationFrame(step);
+    document.addEventListener(
+      'astro:before-swap',
+      () => cancelAnimationFrame(frame),
+      { once: true }
+    );
+  };
+
   const wireCardRotation = () => {
     const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (still) return;
@@ -293,6 +379,10 @@ const services = servicesData.services.slice(0, 8);
     });
   };
 
-  wireCardRotation();
-  document.addEventListener('astro:page-load', wireCardRotation);
+  const bootHome = () => {
+    wireCardRotation();
+    wireFavRail();
+  };
+  bootHome();
+  document.addEventListener('astro:page-load', bootHome);
 </script>
