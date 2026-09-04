@@ -1125,57 +1125,7 @@ p:last-child { margin-bottom: 0; }
 @media (max-width: 620px) {
   :root { --header-h: 52px; }
 
-  /* The phone CTA lives in the fixed .mobile-call bar at the bottom of the
-     screen on phones, so the header copy of it is redundant here - dropping it
-     frees the width the enlarged logo needs to stay on one line. */
-
-  /* taller hero + bottom-anchored copy so the paragraph/button clear the busy
-     lower part of the photo, backed by an extra scrim regardless of crop */
-  .hero {
-    min-height: 600px;
-    align-items: stretch;
-    /* square crop shot for portrait screens - !important beats the inline
-       background-image the page sets from home.json, so only this one loads here */
-    background-image: url('/images/hero-bg-mobile.webp') !important;
-    background-size: cover;
-    background-position: center;
-  }
-  /* Desktop's ::after pairs a horizontal scrim (for flush-left text) with a
-     vertical one. On a narrow phone that horizontal gradient's 0-66% span
-     covers nearly the full screen width, and where it overlapped the vertical
-     scrim it produced a dark blotch with no clean edge. Copy is centred full-
-     width on mobile now, not flush-left, so the horizontal scrim is dropped -
-     vertical-only, darkest at the very top (sky) and bottom (copy/button). */
-  .hero::after {
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.05) 16%, rgba(0, 0, 0, 0.05) 55%, rgba(0, 0, 0, 0.75) 100%);
-  }
-  /* headline sits with clear air below the header; the auto margin below
-     shoves the copy + button down to the bottom as their own group */
-  .hero > .container {
-    display: flex;
-    padding-block: 64px 21px;
-  }
-  .hero-inner {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-  .hero-copy {
-    margin-top: auto;
-    padding-top: 42px;
-  }
-  /* button holds its position while the paragraph above it shifts down */
-  .hero .btn { margin-top: 10px; }
-  /* 35% larger than the base clamp - same top position, just bigger letters */
-  .hero h1 { font-size: clamp(4.05rem, 8.64vw, 5.6rem); }
-
   .header-inner { padding-inline: 16px; gap: 8px; }
-  /* the logo's own top space is only ~12px at this scale, so a small positive
-     margin makes up the 13px of breathing room above the wordmark */
-  .brand img { height: 60px; margin-block: 1px -11px; }
-
-  /* pulled up into the space under the wrench tail so it tucks against the
-     wordmark's baseline rather than the artwork's lowest pixel */
 
   .service-grid { grid-template-columns: 1fr; }
 

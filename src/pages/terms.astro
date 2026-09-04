@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
+import settings from '../data/settings.json';
+---
+
+<BaseLayout
+  title="Terms of Use | The Shop Music City"
+  description="The terms that apply to your use of The Shop Music City website."
+>
+  <PageHead eyebrow="Legal" title="Terms of Use" />
+
+  <section class="section">
+    <div class="container legal">
+      <p class="legal-updated">Last updated: 2026</p>
+
+      <p>
+        By using this website, you agree to these terms. The information on this site is provided in
+        good faith but without warranty of any kind regarding completeness, accuracy, or current
+        applicability.
+      </p>
+
+      <h2>Services</h2>
+      <p>
+        Pricing, availability, and service descriptions are subject to change. Final pricing for any
+        service will be confirmed in writing or by phone prior to work being performed.
+      </p>
+
+      <h2>Intellectual property</h2>
+      <p>
+        All content on this site, including images and text, is the property of The Shop Music City
+        unless otherwise noted. Brand logos shown on this site are the property of their respective
+        owners and are used to indicate products we install.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions? Email <a href={`mailto:${settings.email}`}>{settings.email}</a> or call
+        <a href={settings.phone_link}>{settings.phone}</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

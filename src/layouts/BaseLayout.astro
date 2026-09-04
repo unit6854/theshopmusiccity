@@ -125,8 +125,14 @@ const ogImage = new URL('/og.png', Astro.site ?? SITE);
         const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (coarse || still) return;
 
-        const EASE = 0.062; // lower = heavier glide
-        const PUSH = 1.15; // wheel throw multiplier
+        const EASE = 0.18; // fraction of the remaining gap closed per frame
+        const PUSH = 1; // wheel throw multiplier - 1 means "no extra throw"
+        // How far the glide target may ever sit from the current position.
+        // Without this, fast scrolling piled wheel deltas onto the target and
+        // the page kept coasting long after the wheel stopped - and because
+        // the target was far below, scrolling back up could not overcome it
+        // and the page appeared stuck going down.
+        const LEAD = () => window.innerHeight * 0.9;
 
         // our own rAF loop does the easing, so CSS smoothing has to stand down
         document.documentElement.style.scrollBehavior = 'auto';
@@ -157,9 +163,12 @@ const ogImage = new URL('/og.png', Astro.site ?? SITE);
           (e) => {
             if (e.ctrlKey) return; // pinch zoom
             // the lightbox, the favourites rail, textareas and any other inner
-            // scroller keep their own wheel
-            let node = e.target as HTMLElement | null;
-            while (node && node !== document.body) {
+            // scroller keep their own wheel.
+            // e.target is not always an Element - it can be a text node or the
+            // document - and getComputedStyle throws on those, which aborted
+            // the handler before preventDefault and left scrolling erratic.
+            let node: Element | null = e.target instanceof Element ? e.target : null;
+            while (node && node !== document.body && node !== document.documentElement) {
               const style = getComputedStyle(node);
               if (
                 /(auto|scroll)/.test(style.overflowY + style.overflowX) &&
@@ -176,7 +185,19 @@ const ogImage = new URL('/og.png', Astro.site ?? SITE);
 
             // normalise line- and page-based wheels to pixels
             const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
-            target = Math.min(maxScroll(), Math.max(0, target + e.deltaY * unit * PUSH));
+            const here = window.scrollY;
+
+            // A reversal drops any leftover glide instead of fighting it, so
+            // the page turns around on the first upward notch.
+            if (Math.sign(e.deltaY) !== Math.sign(target - here) && target !== here) {
+              target = here;
+            }
+
+            target += e.deltaY * unit * PUSH;
+            // keep the target within reach of where we actually are
+            const lead = LEAD();
+            target = Math.max(here - lead, Math.min(here + lead, target));
+            target = Math.min(maxScroll(), Math.max(0, target));
             start();
           },
           { passive: false }

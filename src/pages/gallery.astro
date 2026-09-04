@@ -105,7 +105,10 @@ const full = (src: string) => src.replace('/gallery/', '/gallery/full/');
   const wire = () => {
     const grid = document.getElementById('galleryGrid');
     const box = document.getElementById('lightbox');
-    if (!grid || !box) return;
+    // guarded: astro:page-load fires on first load too, so an unguarded
+    // re-bind doubled every filter click and lightbox arrow
+    if (!grid || !box || grid.dataset.wired) return;
+    grid.dataset.wired = '1';
 
     const empty = document.getElementById('galleryEmpty');
     const img = document.getElementById('lightboxImg') as HTMLImageElement | null;

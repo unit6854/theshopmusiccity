@@ -22,29 +22,36 @@ const services = servicesData.services.slice(0, 8);
 
     <div class="container">
       <div class="hero-inner">
-        <p class="eyebrow">{home.hero_eyebrow}</p>
-        <h1>
-          {home.hero_title_line1}
-          <span class="line-2">{home.hero_title_line2}</span>
-        </h1>
-        {home.hero_lead && <p class="hero-lead">{home.hero_lead}</p>}
-        <p class="hero-copy">{home.hero_text}</p>
+        <!-- Split so the copy, button and chips can drop below the photo on
+             phones while the headline stays over it. -->
+        <div class="hero-lede">
+          <p class="eyebrow">{home.hero_eyebrow}</p>
+          <h1>
+            {home.hero_title_line1}
+            <span class="line-2">{home.hero_title_line2}</span>
+          </h1>
+        </div>
 
-        <a class="btn-flare" href={home.hero_button_link}>
-          <span class="btn-flare-label">{home.hero_button_label}</span>
-          <span class="btn-flare-arrow"><Icon name="chevron" size={18} /></span>
-        </a>
+        <div class="hero-rest">
+          {home.hero_lead && <p class="hero-lead">{home.hero_lead}</p>}
+          <p class="hero-copy">{home.hero_text}</p>
 
-        <ul class="hero-chips">
-          {
-            home.hero_chips.map((c) => (
-              <li>
-                <Icon name="check" size={17} />
-                <span>{c}</span>
-              </li>
-            ))
-          }
-        </ul>
+          <a class="btn-flare" href={home.hero_button_link}>
+            <span class="btn-flare-label">{home.hero_button_label}</span>
+            <span class="btn-flare-arrow"><Icon name="chevron" size={18} /></span>
+          </a>
+
+          <ul class="hero-chips">
+            {
+              home.hero_chips.map((c) => (
+                <li>
+                  <Icon name="check" size={17} />
+                  <span>{c}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
       </div>
     </div>
   </section>

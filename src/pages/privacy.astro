@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
+import settings from '../data/settings.json';
+---
+
+<BaseLayout
+  title="Privacy Policy | The Shop Music City"
+  description="How The Shop Music City collects and uses information submitted through this website."
+>
+  <PageHead eyebrow="Legal" title="Privacy Policy" />
+
+  <section class="section">
+    <div class="container legal">
+      <p class="legal-updated">Last updated: 2026</p>
+
+      <p>
+        The Shop Music City ("we," "our," or "us") respects your privacy. This Privacy Policy explains
+        what information we collect on this website and how we use it.
+      </p>
+
+      <h2>Information we collect</h2>
+      <p>
+        When you submit our contact form, we collect the name, email, phone number, and message you
+        provide. We use this information only to respond to your inquiry. We do not sell or share your
+        information with third parties for marketing purposes.
+      </p>
+
+      <h2>Server logs</h2>
+      <p>
+        Like most websites, our server may log basic technical information about visits (such as IP
+        address and pages requested) for security and reliability purposes.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions about this policy? Email
+        <a href={`mailto:${settings.email}`}>{settings.email}</a> or call
+        <a href={settings.phone_link}>{settings.phone}</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

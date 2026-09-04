@@ -51,12 +51,15 @@ const links = [
 </header>
 
 <script>
-  // Bound on every view transition, not just first load, because astro:page-load
-  // fires for each navigation once the ClientRouter is in play.
+  // Re-bound after each view transition, but guarded: astro:page-load also
+  // fires on the very first load, so binding here AND inline gave the toggle
+  // two click listeners - one opened the menu, the other closed it again in
+  // the same click, and it looked completely dead.
   const wire = () => {
     const toggle = document.getElementById('navToggle');
     const nav = document.getElementById('mainNav');
-    if (!toggle || !nav) return;
+    if (!toggle || !nav || toggle.dataset.wired) return;
+    toggle.dataset.wired = '1';
 
     const setOpen = (open: boolean) => {
       nav.classList.toggle('is-open', open);

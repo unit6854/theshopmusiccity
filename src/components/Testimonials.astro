@@ -55,8 +55,11 @@ const items = (featuredReviews.length ? featuredReviews : reviews).slice(0, 6);
 <script>
   // Re-bound per navigation so the slider keeps working after a view transition.
   const wire = () => {
-    const root = document.querySelector('[data-slider]');
-    if (!root) return;
+    const root = document.querySelector<HTMLElement>('[data-slider]');
+    // guarded: astro:page-load fires on first load too, so an unguarded
+    // re-bind gave every arrow two listeners and skipped a review per click
+    if (!root || root.dataset.wired) return;
+    root.dataset.wired = '1';
     const slides = Array.from(document.querySelectorAll('[data-slide]'));
     const dots = Array.from(document.querySelectorAll('[data-dot]'));
     if (!slides.length) return;

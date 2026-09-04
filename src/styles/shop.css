@@ -281,6 +281,19 @@ html.has-landed .page-wipe {
   margin-inline: auto;
   padding-inline: clamp(16px, 3vw, 30px);
 }
+
+/* Hero copy hugs the left edge instead of riding a centred 1400px column.
+   Centring put it ~610px in on a 2560px display while looking right on a
+   1440px laptop; a bounded left pad holds it at roughly the laptop position
+   (50px) and never drifts past 72px however wide the screen gets. */
+@media (min-width: 781px) {
+  .hero > .container {
+    max-width: none;
+    margin-inline: 0;
+    padding-left: clamp(20px, 3.5vw, 72px);
+    padding-right: clamp(16px, 3vw, 30px);
+  }
+}
 /* wide enough to keep "Custom Automotive." on one line at the largest step */
 .hero-inner { max-width: 810px; }
 
@@ -1236,6 +1249,41 @@ html.has-landed .page-wipe {
   background: linear-gradient(90deg, var(--accent) 0%, rgba(226, 16, 47, 0) 100%);
 }
 
+/* ---------- legal pages ------------------------------------------------- */
+
+.legal { max-width: 780px; }
+.legal-updated {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-lt);
+  margin-bottom: 26px;
+}
+.legal h2 {
+  font-size: clamp(1.15rem, 1.9vw, 1.45rem);
+  letter-spacing: 0.06em;
+  margin: 34px 0 12px;
+  padding-left: 14px;
+  border-left: 3px solid var(--accent);
+}
+.legal p { color: #c3c6cf; line-height: 1.75; }
+.legal a { color: var(--accent-lt); text-decoration: underline; text-underline-offset: 3px; }
+.legal a:hover { color: #fff; }
+
+/* footer legal links */
+.footer-bar .container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 18px;
+}
+.footer-legal { display: inline-flex; gap: 10px; align-items: center; color: #6f7480; }
+.footer-legal a { transition: color 0.2s ease; }
+.footer-legal a:hover { color: var(--accent-lt); }
+
 /* rating line under the reviews page title */
 .page-head-rating {
   display: flex;
@@ -1461,22 +1509,24 @@ html.has-landed .page-wipe {
 @media (max-width: 960px) {
   .nav-toggle { display: inline-flex; }
 
+  /* Full-height solid panel. It was translucent before, which let the hero
+     headline read straight through the links. */
   .main-nav {
     position: fixed;
-    inset: var(--header-h) 0 auto;
+    inset: var(--header-h) 0 0;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    background: rgba(8, 8, 11, 0.985);
-    backdrop-filter: blur(14px);
+    background: #08080a;
     border-bottom: 1px solid rgba(226, 16, 47, 0.4);
-    padding: 8px 20px 22px;
+    padding: 8px 20px calc(22px + env(safe-area-inset-bottom, 0px));
     transform: translateY(-8px);
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.24s ease, transform 0.24s ease, visibility 0.24s;
-    max-height: calc(100dvh - var(--header-h));
+    height: calc(100dvh - var(--header-h));
     overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .main-nav.is-open { opacity: 1; visibility: visible; transform: none; }
   .main-nav a {
@@ -1510,15 +1560,30 @@ html.has-landed .page-wipe {
   .masonry { columns: 2 150px; column-gap: 10px; }
   .masonry-item { margin-bottom: 10px; }
 
+  /* On phones the hero splits in two: the photo occupies a fixed band at the
+     top with the headline sitting over its lower edge, and the copy, button
+     and chips drop onto solid black beneath the car. */
   .hero {
-    /* below this width the full-frame ratio would leave a band too short to
-       hold the headline, so height goes back to being content-driven */
     aspect-ratio: auto;
     min-height: auto;
-    padding: clamp(26px, 6vw, 40px) 0 clamp(28px, 7vw, 44px);
-    align-items: center;
+    padding: 0;
+    display: block;
   }
-  .hero > .container { width: 100%; }
+  .hero > .container { width: 100%; position: relative; z-index: 2; }
+
+  .hero-bg { height: var(--hero-photo, 340px); bottom: auto; }
+  .hero::after { height: var(--hero-photo, 340px); bottom: auto; }
+
+  .hero-lede {
+    min-height: var(--hero-photo, 340px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 20px;
+  }
+  .hero-rest {
+    padding: 22px 0 30px;
+  }
   .hero-bg img { object-position: 62% 42%; }
   /* Two layers: a vertical wash that anchors the top and bottom edges, plus a
      left-weighted wash holding a dark field under the copy. Kept lighter on
@@ -1548,10 +1613,20 @@ html.has-landed .page-wipe {
      lines rather than running one line the full width - either extreme pushed
      the tail of the word out past the scrim onto the lit hex wall. */
   .hero h1 { font-size: clamp(2.2rem, 11.2vw, 3.4rem); }
-  .hero-lead { max-width: 34ch; }
-  .hero-copy { max-width: 42ch; }
-  .hero-chips { gap: 9px 20px; margin-top: 24px; }
+  .hero-lead { max-width: 34ch; margin-top: 0; }
+  .hero-copy { max-width: 42ch; margin-top: 0; }
+  .hero-chips { gap: 9px 20px; margin-top: 20px; }
   .hero-chips li { font-size: 0.82rem; }
+
+  /* roughly half the previous footprint - it was a full-width slab */
+  .hero .btn-flare {
+    width: auto;
+    margin-top: 20px;
+    padding: 11px 20px;
+    font-size: 0.82rem;
+    gap: 9px;
+    --chamfer: 10px;
+  }
 
   .section-head { flex-direction: column; align-items: flex-start; gap: 14px; }
   .section-note { padding-left: 0; border-left: 0; }
