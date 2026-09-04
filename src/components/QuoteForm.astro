@@ -1,0 +1,87 @@
+---
+import Icon from './Icon.astro';
+import contact from '../data/contact.json';
+import services from '../data/services.json';
+
+const years = Array.from({ length: 40 }, (_, i) => new Date().getFullYear() + 1 - i);
+const serviceNames = services.services.map((s) => s.title);
+---
+
+<div class="panel panel--accent-edge">
+  <h2>{contact.form_heading}</h2>
+  <div class="rule"></div>
+
+  <!--
+    Mock UI only. Netlify form attributes are present so the infrastructure is
+    prepped, but there is no backend, email routing, or database wired up.
+  -->
+  <form name="quote" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks">
+    <input type="hidden" name="form-name" value="quote" />
+    <p class="hp">
+      <label>Don't fill this out: <input name="bot-field" /></label>
+    </p>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" autocomplete="name" required />
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone Number</label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" required />
+      </div>
+
+      <div class="field field--full">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+      </div>
+
+      <div class="field">
+        <label for="service">What Are You After?</label>
+        <select id="service" name="service" required>
+          <option value="">Select a service</option>
+          {serviceNames.map((s) => <option value={s}>{s}</option>)}
+          <option value="Not sure yet">Not sure yet — let's talk</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="vehicle-year">Vehicle Year</label>
+        <select id="vehicle-year" name="vehicle_year">
+          <option value="">Select year</option>
+          {years.map((y) => <option value={y}>{y}</option>)}
+          <option value="older">Older</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="vehicle-make">Vehicle Make</label>
+        <input id="vehicle-make" name="vehicle_make" type="text" placeholder="Ford, BMW, Chevrolet…" />
+      </div>
+
+      <div class="field">
+        <label for="vehicle-model">Vehicle Model</label>
+        <input id="vehicle-model" name="vehicle_model" type="text" placeholder="F-250, M6, Corvette…" />
+      </div>
+
+      <div class="field field--full">
+        <label for="details">Tell Us About The Project</label>
+        <textarea
+          id="details"
+          name="details"
+          placeholder="Colour or finish you have in mind, how much of the vehicle, any deadlines…"
+          required></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:26px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+      <button class="btn btn--solid" type="submit">
+        {contact.form_button_label}
+        <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
+      </button>
+    </div>
+
+    <p class="form-note">{contact.form_note}</p>
+  </form>
+</div>

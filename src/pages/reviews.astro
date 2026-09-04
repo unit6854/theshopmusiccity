@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import ReviewCard from '../components/ReviewCard.astro';
+import CtaBand from '../components/CtaBand.astro';
+import contact from '../data/contact.json';
+import settings from '../data/settings.json';
+import { reviews } from '../lib/content';
+---
+
+<BaseLayout
+  title="Reviews | The Shop Music City"
+  description="Five-star reviews for window tinting, vinyl wraps and detailing at The Shop Music City in Madison, TN."
+>
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Reviews</p>
+      <h1>{contact.reviews_title}</h1>
+      <p>{contact.reviews_intro}</p>
+
+      <div class="stars" style="justify-content:center; margin-top:20px;" aria-label="5 star rating">
+        {[1, 2, 3, 4, 5].map(() => <Icon name="star" size={22} />)}
+      </div>
+      <p class="rating-note" style="text-align:center;">
+        {settings.rating} stars across {settings.review_count}+ Google reviews
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="extras-grid">
+        {reviews.map((r) => <ReviewCard review={r} />)}
+      </div>
+
+      <div class="section-foot">
+        <a class="btn" href={settings.google_url} target="_blank" rel="noopener">
+          Read More On Google
+          <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <CtaBand />
+</BaseLayout>

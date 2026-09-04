@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import HexBackdrop from '../components/HexBackdrop.astro';
+import CtaBand from '../components/CtaBand.astro';
+import data from '../data/services.json';
+
+const slug = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+---
+
+<BaseLayout
+  title="Services | The Shop Music City"
+  description="Vinyl wraps, window tint, paint protection, ceramic coating, custom builds, detailing and fleet graphics in Madison, TN."
+>
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Services</p>
+      <h1>{data.title}</h1>
+      <p>{data.intro}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      {
+        data.services.map((s, i) => (
+          <article class="svc-row" id={slug(s.title)}>
+            <div class="svc-media">
+              <img src={s.image} alt={s.title} loading="lazy" width="800" height="600" />
+            </div>
+            <div class="svc-copy">
+              <p class="svc-num">{String(i + 1).padStart(2, '0')}</p>
+              <h2>{s.title}</h2>
+              <p>{s.description}</p>
+              <ul class="svc-tags">
+                {s.tags.map((t) => <li>{t}</li>)}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <section class="section hex-page">
+    <HexBackdrop />
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Also At The Shop</p>
+          <h2>{data.extras_heading}</h2>
+        </div>
+        <p class="section-note">{data.extras_intro}</p>
+      </div>
+
+      <div class="extras-grid">
+        {
+          data.extras.map((e) => (
+            <article class="extra-card">
+              <h3>{e.title}</h3>
+              <p>{e.text}</p>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="section-foot">
+        <a class="btn" href="/contact">
+          Request a Quote
+          <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <CtaBand />
+</BaseLayout>

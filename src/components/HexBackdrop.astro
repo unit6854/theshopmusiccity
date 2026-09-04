@@ -1,0 +1,34 @@
+---
+// Coded honeycomb mesh backdrop - pure SVG, so it stays razor sharp at any size.
+// Pointy-top hexagons: tile is one column wide and two rows tall.
+interface Props {
+  /** hexagon circumradius in px before scaling */
+  scale?: number;
+}
+const { scale = 2.1 } = Astro.props;
+
+const W = 17.3205; // sqrt(3) * r, r = 10
+const HEX = 'M8.6603 0 17.3205 5 17.3205 15 8.6603 20 0 15 0 5Z';
+---
+
+<div class="hex-backdrop" aria-hidden="true">
+  <svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <defs>
+      <pattern
+        id="hexmesh"
+        width={W}
+        height="30"
+        patternUnits="userSpaceOnUse"
+        patternTransform={`scale(${scale})`}
+      >
+        <path class="hex-cell" d={HEX} />
+        <path class="hex-cell" d={HEX} transform="translate(8.6603 15)" />
+        <path class="hex-cell" d={HEX} transform="translate(-8.6603 15)" />
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="#040404"></rect>
+    <rect width="100%" height="100%" fill="url(#hexmesh)"></rect>
+  </svg>
+  <span class="hex-shade"></span>
+  <span class="hex-vignette"></span>
+</div>

@@ -1,0 +1,25 @@
+{
+  "title": "Our Story",
+  "subtitle": "The Shop Music City has been Madison's home for window tinting, wraps, and detailing since 2019 — built on craftsmanship, honesty, and a genuine love of the automotive world.",
+  "image": "/images/owner-at-work.webp",
+  "body_1": "Welcome to The Shop Music City — the premier destination for top-tier auto window tinting and vehicle enhancement services in Madison, Tennessee. Proudly serving Nashville, Lebanon, Franklin, and the surrounding areas, we've built our reputation on expert craftsmanship and exceptional customer service since our founding in 2019.",
+  "body_2": "We specialize in high-quality window tinting for a wide variety of vehicles. Whether you're looking to improve your car's aesthetic, add privacy, or block harmful UV rays, our precision tinting delivers outstanding results that last. We also offer specialized boat tinting to protect your watercraft from sun exposure, and commercial vehicle tinting for fleets that need a sleek, uniform look.",
+  "body_3": "Beyond tinting, we offer a complete range of detailing and enhancement services. Paint protection film provides a virtually invisible shield against road debris and scratches, and our ceramic coating adds a deep, glossy finish with long-lasting protection. Our vinyl wraps let you change the color and finish of your vehicle without the commitment of new paint, and an extensive wheel and tire selection rounds out the build.",
+  "body_4": "At The Shop Music City, we understand that every vehicle is an investment, and we treat each one as if it were our own. Our team combines years of experience with the latest technology and highest quality materials to deliver flawless results — every time.",
+  "values_image": "/images/hex-wall.webp",
+  "owner": "Justin, Owner-Operator",
+  "values": [
+    { "title": "Owner-Operated", "text": "Justin is in the shop, on the job. The person who quotes your build is the person who stands behind it." },
+    { "title": "Materials That Last", "text": "Geoshield films, 3M and Avery Dennison vinyl, Toyo tires and KG1 Forged wheels — brands we trust enough to stand behind." },
+    { "title": "Right The First Time", "text": "Bubble-free installs, clean edges, honest timelines. If something isn't right, we make it right." },
+    { "title": "Anything With Wheels", "text": "Cars, trucks, boats, side-by-sides and commercial fleets. If you can drive it, tow it or float it, we can customize it." }
+  ],
+  "areas_eyebrow": "Where We Work",
+  "areas_heading": "Proudly Serving Middle Tennessee.",
+  "areas_intro": "From Madison out — if you're nearby, you're our neighbor.",
+  "areas": [
+    "Madison", "Nashville", "Lebanon", "Franklin", "Brentwood", "Murfreesboro", "Hermitage",
+    "Mt. Juliet", "Gallatin", "Cheatham County", "Wilson County", "Robertson County",
+    "Sumner County", "Williamson County"
+  ]
+}

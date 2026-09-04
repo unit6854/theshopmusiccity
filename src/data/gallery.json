@@ -1,0 +1,53 @@
+{
+  "title": "The Work, On Display",
+  "intro": "Window tints, vinyl wraps, fresh details, custom wheels — a look at what has rolled through the bay.",
+  "categories": [
+    { "slug": "all", "label": "All" },
+    { "slug": "window-tint", "label": "Window Tint" },
+    { "slug": "vinyl-wraps", "label": "Vinyl Wraps" },
+    { "slug": "detailing", "label": "Detailing" },
+    { "slug": "wheels-tires", "label": "Wheels & Tires" },
+    { "slug": "commercial", "label": "Commercial / Fleet" },
+    { "slug": "boats", "label": "Boats" }
+  ],
+  "photos": [
+    { "cat": "window-tint", "src": "/images/gallery/window-tint--tint-suv-rear.webp", "alt": "Blacked-out tint on a truck cab and camper shell" },
+    { "cat": "window-tint", "src": "/images/gallery/window-tint--tint-tahoe.webp", "alt": "Blacked-out Chevrolet Tahoe after a full tint" },
+    { "cat": "window-tint", "src": "/images/gallery/window-tint--tint-gmc-shop.webp", "alt": "White GMC pickup tinted inside the shop" },
+    { "cat": "window-tint", "src": "/images/gallery/window-tint--tint-jeep-wrangler.webp", "alt": "Jeep Wrangler parked beside the Need Tint wall" },
+    { "cat": "window-tint", "src": "/images/gallery/window-tint--tint-gmc-sierra.webp", "alt": "GMC Sierra with fresh ceramic tint" },
+    { "cat": "window-tint", "src": "/images/gallery/window-tint--tint-f250-black.webp", "alt": "Black Ford F-250 with tinted glass" },
+    { "cat": "window-tint", "src": "/images/gallery/window-tint--tint-corvette-blue.webp", "alt": "Blue Corvette under the shop hex lighting" },
+    { "cat": "window-tint", "src": "/images/gallery/window-tint--tint-charger-black.webp", "alt": "Black sports sedan tinted under the hex lights" },
+
+    { "cat": "vinyl-wraps", "src": "/images/gallery/vinyl-wraps--wrap-bmw-m6.webp", "alt": "BMW M6 in a white and black two-tone wrap" },
+    { "cat": "vinyl-wraps", "src": "/images/gallery/vinyl-wraps--wrap-lexus-camo.webp", "alt": "Lexus coupe in a black and white camo wrap" },
+    { "cat": "vinyl-wraps", "src": "/images/gallery/vinyl-wraps--wrap-range-rover-red.webp", "alt": "Range Rover Sport wrapped in satin red" },
+    { "cat": "vinyl-wraps", "src": "/images/gallery/vinyl-wraps--wrap-polaris-camo.webp", "alt": "Polaris side-by-side in a blue camo wrap" },
+    { "cat": "vinyl-wraps", "src": "/images/gallery/vinyl-wraps--wrap-polaris-build.webp", "alt": "Polaris side-by-side mid-build in the bay" },
+    { "cat": "vinyl-wraps", "src": "/images/gallery/vinyl-wraps--wrap-flag-truck.webp", "alt": "Lifted truck in a stars and stripes wrap" },
+    { "cat": "vinyl-wraps", "src": "/images/gallery/vinyl-wraps--wrap-blue-chrome.webp", "alt": "Sports car in a blue and black chrome wrap" },
+    { "cat": "vinyl-wraps", "src": "/images/gallery/vinyl-wraps--wrap-gassed-up-dually.webp", "alt": "Dually pickup with full commercial graphics" },
+
+    { "cat": "detailing", "src": "/images/gallery/detailing--detail-bentley.webp", "alt": "Bentley detailed to a mirror finish" },
+    { "cat": "detailing", "src": "/images/gallery/detailing--detail-corvette-white.webp", "alt": "White Corvette after a full detail" },
+    { "cat": "detailing", "src": "/images/gallery/detailing--detail-tahoe-black.webp", "alt": "Black Tahoe with a corrected, glossy finish" },
+    { "cat": "detailing", "src": "/images/gallery/detailing--detail-g37.webp", "alt": "Black Infiniti sedan detailed in the bay" },
+    { "cat": "detailing", "src": "/images/gallery/detailing--detail-tesla-x.webp", "alt": "Blue Tesla Model X after paint correction" },
+
+    { "cat": "wheels-tires", "src": "/images/gallery/wheels-tires--wheels-k5-blazer.webp", "alt": "Classic K5 Blazer on new wheels and tires" },
+    { "cat": "wheels-tires", "src": "/images/gallery/wheels-tires--wheels-escalade-red.webp", "alt": "Red Cadillac Escalade on black wheels" },
+    { "cat": "wheels-tires", "src": "/images/gallery/wheels-tires--wheels-range-rover.webp", "alt": "Range Rover on aftermarket wheels" },
+    { "cat": "wheels-tires", "src": "/images/gallery/wheels-tires--wheels-f250-lifted.webp", "alt": "Lifted Ford F-250 on oversized tires" },
+    { "cat": "wheels-tires", "src": "/images/gallery/wheels-tires--wheels-tahoe-lifted.webp", "alt": "Lifted white Tahoe on custom wheels" },
+    { "cat": "wheels-tires", "src": "/images/gallery/wheels-tires--wheels-dually-white.webp", "alt": "White dually on polished forged wheels" },
+    { "cat": "wheels-tires", "src": "/images/gallery/wheels-tires--wheels-denali.webp", "alt": "GMC Denali on custom wheels" },
+
+    { "cat": "commercial", "src": "/images/gallery/commercial--fleet-pcm-van.webp", "alt": "Black cargo van with fleet branding" },
+    { "cat": "commercial", "src": "/images/gallery/commercial--fleet-trucks.webp", "alt": "Matching fleet trucks outside the shop" },
+    { "cat": "commercial", "src": "/images/gallery/commercial--fleet-es-trailer.webp", "alt": "Enclosed trailer with Exterior Solutions graphics" },
+    { "cat": "commercial", "src": "/images/gallery/commercial--fleet-gmc-classic.webp", "alt": "Classic GMC pickup outside the shop" },
+
+    { "cat": "boats", "src": "/images/gallery/boats--boat-tow-rig.webp", "alt": "Boat and tow rig detailed and tinted" }
+  ]
+}

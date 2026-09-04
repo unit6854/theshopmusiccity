@@ -1,0 +1,17 @@
+---
+import { faqs } from '../lib/content';
+interface Props { limit?: number }
+const { limit } = Astro.props;
+const items = limit ? faqs.slice(0, limit) : faqs;
+---
+
+<div class="faq">
+  {
+    items.map((f, i) => (
+      <details class="faq-item" open={i === 0}>
+        <summary>{f.question}</summary>
+        <div class="faq-body">{f.answer}</div>
+      </details>
+    ))
+  }
+</div>

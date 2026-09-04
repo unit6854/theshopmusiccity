@@ -1,0 +1,1235 @@
+/* ============================================================
+   The Shop Music City - brand layer
+   Loaded after global.css. global.css supplies the dark shell, the
+   chamfered .btn and the hex vocabulary; everything here is either new
+   to this build or a deliberate override of Marshall's layout so the
+   page matches the wrap-shop mockup.
+   Palette: TN-flag red #e2102f, navy #1e2a44, near-black.
+   ============================================================ */
+
+:root {
+  --navy: #1e2a44;
+  --navy-lt: #2a3a5c;
+  --header-h: 72px;
+}
+
+/* The mock sets its headlines upright, not slanted. */
+h1, h2, h3, h4, .display, .eyebrow, .section-sub { font-style: normal; }
+
+.eyebrow {
+  color: var(--accent-lt);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+}
+
+body { background: #08080a; }
+
+/* ---------- page transition ---------------------------------------------
+   A red sweep crosses the viewport while Astro swaps the document, then
+   clears on landing. Short on purpose - it should register, not delay. */
+
+/* A black panel led by a bright red diagonal edge sweeps across, covers, then
+   carries on off the far side to reveal the new page. The panel is oversized
+   and skewed so the slanted edge still spans top to bottom at any aspect. */
+.page-wipe {
+  position: fixed;
+  top: -15%;
+  bottom: -15%;
+  left: -30%;
+  right: -30%;
+  z-index: 9999;
+  pointer-events: none;
+  /* Parked off-screen, but the skew shears the panel sideways by roughly a
+     quarter of its height, so its top corner still reached back into view.
+     Hiding it outright at rest is the only reliable fix. */
+  visibility: hidden;
+  /* Travel is in vw, not %: the panel is 160% of the viewport wide, so a
+     percentage translate overshoots by more than half a screen. */
+  transform: skewX(-14deg) translateX(-135vw);
+  background: linear-gradient(
+    90deg,
+    #ff5570 0,
+    #e2102f 12px,
+    #08080a 12px,
+    #08080a calc(100% - 12px),
+    #e2102f calc(100% - 12px),
+    #ff5570 100%
+  );
+  box-shadow: 0 0 44px rgba(226, 16, 47, 0.6);
+}
+html.is-navigating .page-wipe {
+  visibility: visible;
+  animation: wipe-cover 0.34s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+html.has-landed .page-wipe {
+  visibility: visible;
+  animation: wipe-clear 0.42s cubic-bezier(0.55, 0, 0.25, 1) forwards;
+}
+@keyframes wipe-cover {
+  from { transform: skewX(-14deg) translateX(-135vw); }
+  to { transform: skewX(-14deg) translateX(0); }
+}
+@keyframes wipe-clear {
+  from { transform: skewX(-14deg) translateX(0); }
+  to { transform: skewX(-14deg) translateX(135vw); }
+}
+
+/* The swap happens while the black panel covers the screen, so Astro's own
+   crossfade would only show through as a flash. Cut it. */
+::view-transition-old(root),
+::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-wipe { display: none; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
+}
+
+/* ---------- section reveal ---------------------------------------------- */
+
+.section,
+.stats-band,
+.cta-band,
+.testimonials {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.section.is-in,
+.stats-band.is-in,
+.cta-band.is-in,
+.testimonials.is-in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .section, .stats-band, .cta-band, .testimonials {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---------- header ------------------------------------------------------
+   Marshall's angled nav panel was tuned to a wordmark this brand does not
+   have, so the header is rebuilt flat: logo left, links right, two icon
+   buttons that take over on small screens. */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background: rgba(6, 6, 8, 0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(226, 16, 47, 0.34);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: var(--header-h);
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: 8px clamp(16px, 3vw, 30px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  /* the logo grows past the bar's inner height on hover, so let it spill */
+  overflow: visible;
+}
+/* Kept a few px under the header's inner height so the script's ascenders and
+   the "THE" tuck above it are never clipped by the bar. */
+.brand img {
+  height: clamp(38px, 4.4vw, 50px);
+  width: auto;
+  display: block;
+  transform-origin: left center;
+  transition: transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1), filter 0.32s ease;
+}
+.brand:hover img,
+.brand:focus-visible img {
+  transform: scale(1.16);
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.6));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand img { transition: none; }
+  .brand:hover img { transform: none; }
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.7vw, 26px);
+}
+.main-nav a {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #cbcdd4;
+  padding: 6px 0;
+  transition: color 0.22s ease;
+}
+.main-nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.main-nav a:hover,
+.main-nav a:focus-visible,
+.main-nav a[aria-current='page'] { color: #fff; }
+.main-nav a:hover::after,
+.main-nav a:focus-visible::after,
+.main-nav a[aria-current='page']::after { transform: scaleX(1); }
+
+.main-nav .nav-quote {
+  padding: 9px 18px;
+  color: #fff;
+  border: 1px solid var(--accent);
+  background: rgba(226, 16, 47, 0.14);
+  border-radius: 3px;
+  font-size: 0.88rem;
+  transition: background 0.24s ease, box-shadow 0.24s ease, transform 0.24s ease;
+}
+.main-nav .nav-quote::after { display: none; }
+.main-nav .nav-quote:hover {
+  background: var(--accent);
+  box-shadow: 0 0 22px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.header-actions { display: flex; align-items: center; gap: 10px; }
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease, transform 0.2s ease;
+}
+.icon-btn:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.5); }
+.icon-btn--accent {
+  border-color: var(--accent);
+  color: var(--accent-lt);
+  box-shadow: 0 0 14px rgba(226, 16, 47, 0.3);
+}
+.icon-btn--accent:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-lt);
+  box-shadow: 0 0 26px var(--accent-glow);
+}
+
+.nav-toggle { display: none; }
+.nav-toggle-close { display: none; }
+
+/* ---------- hero -------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  /* Matches Hero_final 2.png (1870x841) exactly, so cover crops nothing and
+     the shot is shown as framed - no zoom. A floor keeps the copy from being
+     squeezed on short-but-wide windows. */
+  aspect-ratio: 1870 / 841;
+  min-height: 460px;
+  background: #08080a;
+  overflow: hidden;
+}
+.hero-bg { position: absolute; inset: 0; }
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* aspect matches the section, so this only matters if the min-height floor
+     kicks in on a short window */
+  object-position: 50% 50%;
+}
+/* Scrim keeps the copy readable over the truck without dulling the red. */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(5, 5, 7, 0.94) 0%, rgba(5, 5, 7, 0.82) 30%, rgba(5, 5, 7, 0.34) 54%, rgba(5, 5, 7, 0.05) 74%),
+    linear-gradient(0deg, rgba(5, 5, 7, 0.62) 0%, rgba(5, 5, 7, 0) 42%);
+}
+.hero > .container {
+  position: relative;
+  z-index: 2;
+  max-width: 1400px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 3vw, 30px);
+}
+/* wide enough to keep "Custom Automotive." on one line at the largest step */
+.hero-inner { max-width: 810px; }
+
+/* No text-shadow on the headline - any dark glow reads as a smudge behind the
+   letterforms. The hero scrim carries the contrast instead. */
+.hero h1 {
+  font-size: clamp(2.88rem, 6.3vw, 5.3rem);
+  line-height: 0.9;
+  margin: 14px 0 0;
+  text-shadow: none;
+}
+.hero h1 .line-2 { display: block; }
+
+.hero .eyebrow { font-size: 0.72rem; }
+
+.hero-lead {
+  margin-top: 22px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(0.95rem, 1.35vw, 1.17rem);
+  color: #fff;
+  max-width: 26ch;
+}
+.hero-copy {
+  margin-top: 20px;
+  font-size: clamp(0.9rem, 1.12vw, 1.03rem);
+  line-height: 1.6;
+  color: #cdd0d8;
+  max-width: 46ch;
+}
+
+/* Hero button runs ~10% under the site default so it sits with the headline
+   rather than competing with it. */
+.hero .btn-flare {
+  margin-top: 28px;
+  padding: 13px 27px;
+  font-size: 0.92rem;
+  gap: 12px;
+}
+
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 28px;
+}
+.hero-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.83rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e6e8ee;
+}
+.hero-chips svg { color: var(--accent-lt); flex: none; }
+
+/* ---------- flare button ------------------------------------------------
+   Flashy, cycling slowly through shades of red, without pulling focus from
+   the headline: the fill drifts over 14s with no glow pulse, and the sheen
+   only sweeps on hover. */
+
+@keyframes flare-drift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.btn-flare {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 30px;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(100deg, #8c061c 0%, #e2102f 26%, #ff3d5c 50%, #e2102f 74%, #8c061c 100%);
+  background-size: 300% 100%;
+  animation: flare-drift 14s ease-in-out infinite;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45), 0 0 20px rgba(226, 16, 47, 0.3);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease;
+}
+.btn-flare::after {
+  content: '';
+  position: absolute;
+  top: -60%;
+  bottom: -60%;
+  left: -30%;
+  width: 26%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.42) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: translateX(-140%) rotate(14deg);
+  opacity: 0;
+  transition: transform 0.62s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+.btn-flare:hover,
+.btn-flare:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55), 0 0 34px var(--accent-glow);
+}
+.btn-flare:hover::after,
+.btn-flare:focus-visible::after { transform: translateX(560%) rotate(14deg); opacity: 1; }
+.btn-flare:active { transform: translateY(-1px) scale(0.985); }
+
+.btn-flare-arrow { display: inline-flex; transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.btn-flare:hover .btn-flare-arrow { transform: translateX(6px); }
+.btn-flare-icon { display: inline-flex; }
+.btn-flare--wide { width: min(420px, 100%); justify-content: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-flare { animation: none; background-position: 32% 50%; }
+}
+
+/* ---------- secondary button -------------------------------------------
+   global.css chamfers .btn with clip-path while also drawing a 1px border.
+   The clip cuts through that border, so the corners read as a doubled,
+   mis-registered outline. Drop the chamfer and let the border close cleanly -
+   the flare button is the one carrying the flourish now. */
+
+.btn {
+  clip-path: none;
+  border-radius: 4px;
+  /* the chamfer was also what contained the ::before hover wipe, which parks
+     at translateX(-101%) - without a clip it spills out to the left */
+  overflow: hidden;
+  box-shadow: 0 0 16px rgba(226, 16, 47, 0.18), inset 0 0 20px rgba(226, 16, 47, 0.08);
+}
+
+/* ---------- section furniture ------------------------------------------ */
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.section-head h2 { font-size: clamp(2rem, 3.6vw, 3.1rem); margin-top: 6px; }
+
+.section-note {
+  color: var(--muted);
+  font-size: 0.98rem;
+  max-width: 42ch;
+  padding-left: 22px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+.section-note--wide { max-width: 62ch; margin: 6px 0 30px; }
+
+.section-foot { margin-top: 30px; display: flex; justify-content: center; }
+
+/* ---------- service cards ----------------------------------------------
+   Mock puts the photo on top and the copy in a solid block beneath it,
+   with the hex icon straddling the seam. */
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 28px;
+}
+
+/* Cards fade in one into the next rather than the whole grid appearing at
+   once, so the set reads as a sweep across the row. --i is set per card. */
+.service-grid .service-card {
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+  transition: opacity 0.62s ease, transform 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease, box-shadow 0.25s ease;
+  transition-delay: calc(var(--i, 0) * 85ms);
+}
+.section.is-in .service-grid .service-card { opacity: 1; transform: none; }
+
+/* The photos used to fade out at their left and right edges to blend the row
+   together. That reads as a defect now the frames are drawn in red, so the
+   blending is carried by the staggered fade-in above instead. */
+
+@media (prefers-reduced-motion: reduce) {
+  .service-grid .service-card {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    transition-delay: 0s;
+  }
+}
+
+.service-card {
+  position: relative;
+  display: block;
+  min-height: 0;
+  padding: 0;
+  background: #101014;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+/* Red frame around the photo, with the two cross-dissolving layers stacked
+   inside it. */
+.service-card .card-media {
+  position: relative;
+  display: block;
+  height: 168px;
+  margin: 10px 10px 0;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 0 14px rgba(226, 16, 47, 0.22), inset 0 0 22px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.service-card .card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.35) brightness(0.78) contrast(1.06);
+  opacity: 0;
+  transition: opacity 0.7s ease, filter 0.4s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.service-card .card-img.is-on { opacity: 1; }
+.service-card::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  height: 168px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, rgba(8, 8, 10, 0.1) 0%, rgba(8, 8, 10, 0.72) 100%);
+  pointer-events: none;
+}
+.service-card-body {
+  position: relative;
+  z-index: 2;
+  display: block;
+  padding: 0 18px 20px;
+  margin-top: -26px;
+}
+.service-card-body h3 {
+  font-size: 1.12rem;
+  letter-spacing: 0.06em;
+  margin: 14px 0 6px;
+  transition: color 0.25s ease;
+}
+.service-card-body p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.service-card:hover {
+  border-color: rgba(226, 16, 47, 0.7);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.5), 0 0 24px rgba(226, 16, 47, 0.22);
+  transform: translateY(-4px);
+}
+.service-card:hover .card-img { filter: grayscale(0) brightness(0.95) contrast(1.06); transform: scale(1.04); }
+.service-card:hover .card-media {
+  border-color: var(--accent-lt);
+  box-shadow: 0 0 24px rgba(226, 16, 47, 0.5), inset 0 0 22px rgba(0, 0, 0, 0.45);
+}
+.service-card:hover .service-card-body h3 { color: var(--accent-lt); }
+
+/* ---------- favourites rail -------------------------------------------- */
+
+.favorites { background: #0b0b0e; }
+
+.fav-rail {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px clamp(16px, 4vw, 40px) 22px;
+}
+.fav-track { display: flex; gap: 16px; }
+
+.fav-card {
+  position: relative;
+  flex: 0 0 clamp(230px, 26vw, 300px);
+  scroll-snap-align: start;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: #101014;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.fav-card img {
+  width: 100%;
+  height: clamp(290px, 32vw, 375px);
+  object-fit: cover;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fav-meta {
+  display: block;
+  padding: 14px 16px 16px;
+  border-top: 1px solid rgba(226, 16, 47, 0.35);
+  background: linear-gradient(180deg, #121216 0%, #0d0d10 100%);
+}
+.fav-title {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #fff;
+  font-size: 1rem;
+}
+.fav-tags {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.fav-card:hover {
+  border-color: rgba(226, 16, 47, 0.65);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
+}
+.fav-card:hover img { transform: scale(1.05); }
+
+/* ---------- vision ------------------------------------------------------ */
+
+.vision { background: var(--bg-2); }
+
+.vision-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(26px, 4vw, 56px);
+  align-items: center;
+}
+.vision-copy h2 { font-size: clamp(1.9rem, 3.2vw, 2.7rem); margin: 8px 0 14px; }
+.vision-copy p { color: var(--muted); max-width: 34ch; }
+
+.vision-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.vision-tile {
+  text-align: center;
+  padding: 24px 14px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  background: #131317;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+.vision-tile svg { color: var(--accent-lt); margin-inline: auto; }
+.vision-tile h3 {
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  margin: 12px 0 6px;
+}
+.vision-tile p { font-size: 0.85rem; color: var(--muted); line-height: 1.45; }
+.vision-tile:hover {
+  border-color: rgba(226, 16, 47, 0.6);
+  background: #17171c;
+  transform: translateY(-4px);
+}
+
+.vision-cta { margin-top: 34px; display: flex; justify-content: center; }
+
+/* ---------- stats band -------------------------------------------------- */
+
+.stats-band {
+  background: #0a0a0d;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 26px 0;
+}
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+.stat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 8px 18px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+.stat:first-child { border-left: 0; }
+.stat-value {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+  line-height: 1;
+  color: #fff;
+}
+.stat-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+/* ---------- about (home) ------------------------------------------------ */
+
+.about-home { background: var(--bg-2); }
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(26px, 4vw, 54px);
+  align-items: center;
+}
+.about-media {
+  position: relative;
+  border: 1px solid rgba(226, 16, 47, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+/* At desktop the frame matches the source's aspect, but once the grid stacks
+   the frame goes wide and short - a centred crop lands on the undercarriage,
+   so bias it up onto the body and cab. */
+.about-media img {
+  width: 100%;
+  height: clamp(260px, 30vw, 400px);
+  object-fit: cover;
+  object-position: center 32%;
+}
+.about-copy h2 { font-size: clamp(1.9rem, 3.2vw, 2.7rem); margin: 8px 0 16px; max-width: 18ch; }
+.about-copy > p { color: var(--muted); }
+
+.check-list { margin: 22px 0 26px; display: grid; gap: 11px; }
+.check-list li { display: flex; align-items: flex-start; gap: 11px; font-size: 0.96rem; }
+.check-list svg { color: var(--accent-lt); flex: none; margin-top: 2px; }
+
+.brands { margin-top: clamp(38px, 5vw, 60px); text-align: center; }
+.brands-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.76rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.brands-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 34px;
+}
+.brands-list li {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.05rem, 1.9vw, 1.4rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6f7480;
+  transition: color 0.25s ease;
+}
+.brands-list li:hover { color: #cfd2d9; }
+
+/* ---------- cta band ---------------------------------------------------- */
+
+.cta-band {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(46px, 6vw, 78px) 0;
+  background: #08080a;
+}
+/* global.css also lays a flat 72% black over this band; between that, the
+   image opacity and the gradient the truck was being dimmed three times. The
+   flat layer goes, and the remaining wash is weighted to the left so the copy
+   box has a dark field to sit on while the truck stays lit on the right. */
+.cta-band::before { background: none; }
+
+.cta-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 50%;
+  opacity: 0.95;
+}
+.cta-band::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(6, 6, 8, 0.95) 0%,
+      rgba(6, 6, 8, 0.88) 40%,
+      rgba(6, 6, 8, 0.5) 66%,
+      rgba(6, 6, 8, 0.12) 92%
+    ),
+    linear-gradient(0deg, rgba(6, 6, 8, 0.5) 0%, rgba(6, 6, 8, 0) 40%);
+}
+.cta-band > .container { position: relative; z-index: 2; }
+.cta-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(24px, 4vw, 48px);
+  align-items: center;
+  /* flush left in the content column, leaving the right of the band to the photo */
+  margin-left: 0;
+  margin-right: auto;
+  max-width: 820px;
+}
+.cta-text h2 { font-size: clamp(1.9rem, 3.4vw, 2.9rem); line-height: 1; }
+.cta-text h2 .line-2 { display: block; color: var(--accent-lt); }
+.cta-text p { margin-top: 14px; color: var(--muted); max-width: 46ch; }
+.cta-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+
+/* ---------- gallery ----------------------------------------------------- */
+
+.gallery-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.filter-pill {
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: #d5d7dd;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.22s ease, background 0.22s ease, color 0.22s ease, box-shadow 0.22s ease;
+}
+.filter-pill:hover { border-color: rgba(255, 255, 255, 0.45); color: #fff; }
+.filter-pill.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 22px rgba(226, 16, 47, 0.45);
+}
+
+.gallery-rule {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 22px 0 30px;
+}
+
+.masonry { columns: 4 240px; column-gap: 14px; }
+.masonry-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  break-inside: avoid;
+  margin-bottom: 14px;
+  padding: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #101014;
+  cursor: zoom-in;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.masonry-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
+}
+/* red glow on hover, plus a zoom badge so it reads as openable */
+.masonry-item:hover,
+.masonry-item:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 1px rgba(226, 16, 47, 0.5), 0 0 26px rgba(226, 16, 47, 0.55),
+    0 16px 34px rgba(0, 0, 0, 0.55);
+  outline: none;
+}
+.masonry-item:hover img,
+.masonry-item:focus-visible img { transform: scale(1.05); filter: brightness(1.08); }
+
+.masonry-zoom {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(8, 8, 10, 0.72);
+  border: 1px solid var(--accent);
+  color: #fff;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.masonry-item:hover .masonry-zoom,
+.masonry-item:focus-visible .masonry-zoom { opacity: 1; transform: none; }
+
+.gallery-empty { text-align: center; color: var(--muted); padding: 40px 0; }
+
+/* ---------- lightbox ---------------------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(6px, 2vw, 22px);
+  padding: clamp(16px, 4vw, 46px);
+  background: rgba(4, 4, 6, 0.94);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+/* `.lightbox { display: grid }` outranks the UA's `[hidden] { display: none }`,
+   which left a transparent full-screen layer swallowing every click on the
+   grid beneath it. Re-assert it at class specificity. */
+.lightbox[hidden] { display: none; }
+.lightbox.is-open { opacity: 1; }
+
+.lightbox-stage {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.lightbox-stage img {
+  max-width: 100%;
+  max-height: 78vh;
+  width: auto;
+  border-radius: 4px;
+  border: 1px solid rgba(226, 16, 47, 0.55);
+  box-shadow: 0 0 60px rgba(226, 16, 47, 0.28), 0 30px 70px rgba(0, 0, 0, 0.7);
+}
+.lightbox-stage figcaption { text-align: center; }
+.lightbox-cat {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-lt);
+}
+.lightbox-caption {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.94rem;
+  color: #cdd0d8;
+}
+
+.lightbox-nav,
+.lightbox-close {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(12, 12, 15, 0.8);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, transform 0.2s ease;
+}
+.lightbox-nav:hover,
+.lightbox-close:hover {
+  background: var(--accent);
+  border-color: var(--accent-lt);
+  box-shadow: 0 0 24px var(--accent-glow);
+  transform: scale(1.06);
+}
+.lightbox-close {
+  position: absolute;
+  top: clamp(14px, 3vw, 26px);
+  right: clamp(14px, 3vw, 26px);
+  z-index: 2;
+}
+
+@media (max-width: 640px) {
+  .lightbox { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+  .lightbox-stage { grid-row: 1; }
+  .lightbox-stage img { max-height: 66vh; }
+  .lightbox-nav { position: static; }
+  .lightbox-prev { grid-row: 2; justify-self: start; }
+  .lightbox-next { grid-row: 2; justify-self: end; }
+}
+
+/* ---------- services page ---------------------------------------------- */
+
+.svc-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 52px);
+  align-items: center;
+  padding: clamp(30px, 4vw, 48px) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+.svc-row:first-child { border-top: 0; }
+.svc-row:nth-child(even) .svc-media { order: 2; }
+.svc-media {
+  border: 1px solid rgba(226, 16, 47, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.svc-media img { width: 100%; height: clamp(240px, 26vw, 330px); object-fit: cover; }
+.svc-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  color: var(--accent-lt);
+}
+.svc-copy h2 { font-size: clamp(1.7rem, 2.8vw, 2.3rem); margin: 8px 0 14px; }
+.svc-copy p { color: var(--muted); }
+.svc-tags { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+.svc-tags li {
+  padding: 7px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  font-size: 0.83rem;
+  color: #cfd2d9;
+}
+
+.extras-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+.extra-card {
+  padding: 22px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  background: #121216;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.extra-card h3 {
+  font-size: 0.94rem;
+  letter-spacing: 0.14em;
+  color: var(--accent-lt);
+  margin-bottom: 10px;
+}
+.extra-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+.extra-card:hover { border-color: rgba(226, 16, 47, 0.55); transform: translateY(-3px); }
+
+/* ---------- generic page head ------------------------------------------ */
+
+/* Black at the top, a deep red bloom rising out of the bottom edge. Kept low
+   in opacity and weighted below the type, so headings stay on near-black and
+   the colour reads as light spilling up rather than a coloured panel. */
+.page-head {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(52px, 7vw, 96px) 0 clamp(42px, 5vw, 66px);
+  background:
+    radial-gradient(115% 78% at 50% 122%, rgba(226, 16, 47, 0.5) 0%, rgba(226, 16, 47, 0.2) 40%, rgba(226, 16, 47, 0) 72%),
+    linear-gradient(180deg, #08080a 0%, #08080a 46%, #100609 100%);
+  text-align: center;
+}
+/* thin lit edge along the bottom, brightest under the centre */
+.page-head::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(226, 16, 47, 0) 0%,
+    rgba(255, 61, 92, 0.85) 50%,
+    rgba(226, 16, 47, 0) 100%
+  );
+}
+.page-head > .container { position: relative; z-index: 1; }
+.page-head h1 { font-size: clamp(2.3rem, 5vw, 4rem); margin-top: 10px; }
+.page-head p { margin: 16px auto 0; max-width: 62ch; color: #c3c6cf; }
+
+/* ---------- areas served ------------------------------------------------ */
+
+.areas-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.areas-list li {
+  padding: 9px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: #cfd2d9;
+  transition: border-color 0.22s ease, color 0.22s ease;
+}
+.areas-list li:hover { border-color: var(--accent); color: #fff; }
+
+/* ---------- info cards (contact) --------------------------------------- */
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.info-card {
+  padding: 24px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  background: #121216;
+}
+.info-card h3 {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--accent-lt);
+  margin-bottom: 12px;
+}
+.info-card p,
+.info-card address { font-style: normal; color: #d5d7dd; line-height: 1.7; }
+.info-card a:hover { color: var(--accent-lt); }
+
+.hours-table { width: 100%; border-collapse: collapse; }
+.hours-table td { padding: 7px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.07); font-size: 0.92rem; }
+.hours-table td:last-child { text-align: right; color: var(--muted); }
+.hours-table tr:last-child td { border-bottom: 0; }
+
+/* ---------- fixed mobile call bar --------------------------------------
+   global.css reserves 62px of body padding for this bar but only paints 4px
+   of its own, so it sat cramped inside the space it had claimed. */
+
+.mobile-call { padding: 9px 14px; gap: 14px; }
+.mobile-call-icon { width: 32px; height: 32px; }
+.mobile-call-number { font-style: normal; font-size: 1.14rem; }
+.mobile-call-label { font-size: 0.63rem; }
+
+/* ---------- responsive -------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .service-grid { grid-template-columns: repeat(3, 1fr); }
+  .masonry { columns: 3 220px; }
+}
+
+@media (max-width: 960px) {
+  .nav-toggle { display: inline-flex; }
+
+  .main-nav {
+    position: fixed;
+    inset: var(--header-h) 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: rgba(8, 8, 11, 0.985);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(226, 16, 47, 0.4);
+    padding: 8px 20px 22px;
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.24s ease, transform 0.24s ease, visibility 0.24s;
+    max-height: calc(100dvh - var(--header-h));
+    overflow-y: auto;
+  }
+  .main-nav.is-open { opacity: 1; visibility: visible; transform: none; }
+  .main-nav a {
+    padding: 15px 4px;
+    font-size: 1.06rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .main-nav a::after { display: none; }
+  .main-nav .nav-quote {
+    margin-top: 16px;
+    text-align: center;
+    padding: 14px 18px;
+    border-bottom: 0;
+  }
+  body.nav-locked { overflow: hidden; }
+  .nav-toggle[aria-expanded='true'] .nav-toggle-open { display: none; }
+  .nav-toggle[aria-expanded='true'] .nav-toggle-close { display: inline-flex; }
+
+  .vision-grid { grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; }
+  .cta-box { grid-template-columns: 1fr; max-width: none; }
+  .svc-row { grid-template-columns: 1fr; }
+  .svc-row:nth-child(even) .svc-media { order: 0; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 14px 0; }
+  .stat:nth-child(3) { border-left: 0; }
+}
+
+@media (max-width: 780px) {
+  .service-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .masonry { columns: 2 150px; column-gap: 10px; }
+  .masonry-item { margin-bottom: 10px; }
+
+  .hero {
+    /* below this width the full-frame ratio would leave a band too short to
+       hold the headline, so height goes back to being content-driven */
+    aspect-ratio: auto;
+    min-height: auto;
+    padding: clamp(34px, 9vw, 60px) 0 clamp(30px, 8vw, 48px);
+    align-items: flex-end;
+  }
+  .hero-bg img { object-position: 72% 44%; }
+  /* The headline's second line is red and the hero vehicle is red, so a plain
+     vertical scrim leaves it fighting the truck. Two layers instead: a vertical
+     wash for the top and bottom edges, plus a left-weighted wash that holds a
+     dark field under the copy while the truck stays lit on the right. */
+  .hero::after {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(5, 5, 7, 0.92) 0%,
+        rgba(5, 5, 7, 0.5) 30%,
+        rgba(5, 5, 7, 0.34) 54%,
+        rgba(5, 5, 7, 0.9) 84%,
+        rgba(5, 5, 7, 0.99) 100%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(5, 5, 7, 0.93) 0%,
+        rgba(5, 5, 7, 0.86) 34%,
+        rgba(5, 5, 7, 0.52) 62%,
+        rgba(5, 5, 7, 0.1) 88%
+      );
+  }
+  .hero-inner { max-width: none; }
+  .hero h1 { font-size: clamp(2.6rem, 12.6vw, 3.7rem); }
+  .hero-lead { max-width: 34ch; }
+  .hero-copy { max-width: 42ch; }
+  .hero-chips { gap: 9px 20px; margin-top: 24px; }
+  .hero-chips li { font-size: 0.82rem; }
+
+  .section-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .section-note { padding-left: 0; border-left: 0; }
+  .vision-tiles { grid-template-columns: repeat(2, 1fr); }
+  .btn-flare { width: 100%; justify-content: center; }
+  .btn-flare--wide { width: 100%; }
+  .cta-actions { flex-direction: column; align-items: stretch; }
+  .cta-actions .btn { justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .brand img { height: 40px; }
+  .service-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .stat { flex-direction: column; text-align: center; gap: 8px; padding: 14px 8px; }
+  .fav-card { flex-basis: 74vw; }
+}

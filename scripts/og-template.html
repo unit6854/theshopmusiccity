@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: #050505;
+        font-family: 'Barlow', sans-serif;
+        color: #fff;
+      }
+      .card { position: relative; width: 1200px; height: 630px; overflow: hidden; }
+
+      .shot {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 62% 55%;
+      }
+      .shade {
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.86) 34%, rgba(0,0,0,0.28) 62%, rgba(0,0,0,0.1) 100%),
+          radial-gradient(120% 90% at 30% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.45) 70%, rgba(0,0,0,0.85) 100%);
+      }
+
+      /* thin lime rules top and bottom */
+      .rule-top, .rule-bottom {
+        position: absolute; left: 0; right: 0; height: 6px;
+        background: linear-gradient(90deg, #6bff4a 0%, #2fff00 45%, rgba(47,255,0,0) 92%);
+        box-shadow: 0 0 26px rgba(47,255,0,0.6);
+      }
+      .rule-top { top: 0; }
+      .rule-bottom { bottom: 0; transform: scaleX(-1); }
+
+      .inner {
+        position: absolute;
+        inset: 0;
+        padding: 52px 70px 58px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .logo { height: 94px; width: auto; filter: drop-shadow(0 6px 18px rgba(0,0,0,0.8)); }
+      .city {
+        font-family: 'Saira Condensed', sans-serif;
+        font-weight: 700;
+        font-style: oblique 10deg;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 18px;
+        color: #6bff4a;
+        margin: 6px 0 0 14%;
+      }
+
+      .eyebrow {
+        font-family: 'Saira Condensed', sans-serif;
+        font-weight: 700;
+        font-style: oblique 10deg;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-size: 21px;
+        color: #6bff4a;
+        margin-bottom: 12px;
+      }
+      h1 {
+        font-family: 'Saira Condensed', sans-serif;
+        font-weight: 800;
+        font-style: oblique 10deg;
+        text-transform: uppercase;
+        font-size: 96px;
+        line-height: 0.9;
+        letter-spacing: 0.005em;
+        text-shadow: 0 8px 30px rgba(0,0,0,0.8);
+      }
+      h1 .g { color: #2fff00; display: block; }
+      .sub {
+        margin-top: 20px;
+        font-size: 25px;
+        color: #e2e5df;
+        max-width: 22ch;
+        line-height: 1.35;
+      }
+
+      .foot { display: flex; align-items: center; gap: 22px; }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 26px;
+        transform: skewX(-12deg);
+        background: linear-gradient(180deg, #52ff33 0%, #2bec00 55%, #199c00 100%);
+        border: 1px solid #6bff4a;
+        box-shadow: 0 0 34px rgba(47,255,0,0.5);
+      }
+      .pill span {
+        transform: skewX(12deg);
+        font-family: 'Saira Condensed', sans-serif;
+        font-weight: 700;
+        font-size: 30px;
+        letter-spacing: 0.03em;
+      }
+      .addr {
+        font-family: 'Saira Condensed', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+        font-size: 19px;
+        color: #c9ccc6;
+        line-height: 1.45;
+      }
+      .stars { color: #6bff4a; letter-spacing: 3px; font-size: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img class="shot" src="../public/images/hero-bg.webp" alt="" />
+      <div class="shade"></div>
+      <div class="rule-top"></div>
+      <div class="rule-bottom"></div>
+
+      <div class="inner">
+        <div>
+          <img class="logo" src="../public/images/logo.webp" alt="Marshall Automotive LLC" />
+          <div class="city">Hermitage, TN</div>
+        </div>
+
+        <div>
+          <div class="eyebrow">Honest Work. Real Results.</div>
+          <h1>Built To<span class="g">Perform.</span></h1>
+          <div class="sub">Trusted auto repair in Hermitage, Tennessee.</div>
+        </div>
+
+        <div class="foot">
+          <div class="pill"><span>615-732-1894</span></div>
+          <div class="addr">
+            4235 Lebanon Pike<br />
+            <span class="stars">★★★★★</span> 4.8 on Yelp &nbsp;•&nbsp; 5-Star BBB
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import FaqList from '../components/FaqList.astro';
+import CtaBand from '../components/CtaBand.astro';
+import settings from '../data/settings.json';
+---
+
+<BaseLayout
+  title="FAQ | The Shop Music City"
+  description="Hours, film brands, services, booking and the areas we serve — the questions customers ask us most."
+>
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">FAQ</p>
+      <h1>Questions, Answered.</h1>
+      <p>
+        The things customers ask us most often. If you don't see what you're looking for, just give us a call.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container" style="max-width:900px;">
+      <FaqList />
+
+      <div class="section-foot">
+        <a class="btn" href={settings.phone_link}>
+          Call {settings.phone}
+          <span class="btn-arrow"><Icon name="phone" size={18} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <CtaBand />
+</BaseLayout>

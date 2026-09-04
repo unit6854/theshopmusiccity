@@ -1,0 +1,299 @@
+backend:
+  name: git-gateway
+  repo: unit6854/theshopmusiccity
+  branch: main
+
+# Set to true (plus `npx decap-server` alongside `npm run dev`) to edit content at
+# http://localhost:4321/admin/ without logging in. Must stay false on the live site.
+local_backend: false
+
+media_folder: "public/images"
+public_folder: "/images"
+
+publish_mode: simple
+site_url: https://theshopmusiccity.netlify.app
+display_url: https://theshopmusiccity.netlify.app
+logo_url: /images/logo.webp
+
+collections:
+  # ------------------------------------------------------------------
+  # GLOBAL SETTINGS - phone, address, hours, social links
+  # ------------------------------------------------------------------
+  - name: settings
+    label: "Global Settings"
+    files:
+      - name: business
+        label: "Business Info (Phone, Address, Hours)"
+        file: "src/data/settings.json"
+        description: "Phone number, address, hours and social links used across every page."
+        fields:
+          - { name: business_name, label: "Business Name", widget: string }
+          - { name: tagline, label: "Tagline", widget: string }
+          - { name: location_line, label: "Location Line", widget: string }
+          - { name: logo, label: "Logo", widget: image }
+          - { name: phone, label: "Phone Number (displayed)", widget: string }
+          - { name: phone_link, label: "Phone Link (tel:)", widget: string, hint: "Format: tel:+16154744773" }
+          - { name: email, label: "Email Address", widget: string }
+          - { name: address_line1, label: "Address Line 1", widget: string }
+          - { name: address_line2, label: "Address Line 2", widget: string }
+          - { name: map_url, label: "Directions Link", widget: string }
+          - { name: facebook_url, label: "Facebook URL", widget: string }
+          - { name: instagram_url, label: "Instagram URL", widget: string }
+          - { name: google_url, label: "Google Business URL", widget: string }
+          - { name: rating, label: "Star Rating", widget: string }
+          - { name: review_count, label: "Review Count", widget: string }
+          - { name: founded, label: "Year Founded", widget: string }
+          - { name: footer_blurb, label: "Footer Blurb", widget: text }
+          - { name: payment_methods, label: "Payment Methods", widget: text }
+          - name: hours
+            label: "Shop Hours"
+            widget: list
+            fields:
+              - { name: days, label: "Day", widget: string }
+              - { name: time, label: "Hours", widget: string }
+
+  # ------------------------------------------------------------------
+  # PAGES
+  # ------------------------------------------------------------------
+  - name: pages
+    label: "Pages"
+    files:
+      - name: home
+        label: "Home Page"
+        file: "src/data/home.json"
+        fields:
+          - { name: hero_image, label: "Hero Image (wide)", widget: image }
+          - { name: hero_image_mobile, label: "Hero Image (mobile / tall)", widget: image }
+          - { name: hero_eyebrow, label: "Hero Small Text", widget: string }
+          - { name: hero_title_line1, label: "Hero Headline Line 1 (white)", widget: string }
+          - { name: hero_title_line2, label: "Hero Headline Line 2 (red)", widget: string }
+          - { name: hero_lead, label: "Hero Lead Line (bold)", widget: string }
+          - { name: hero_text, label: "Hero Supporting Line", widget: string }
+          - { name: hero_button_label, label: "Hero Button Label", widget: string }
+          - { name: hero_button_link, label: "Hero Button Link", widget: string }
+          - name: hero_chips
+            label: "Hero Tick Chips"
+            widget: list
+            field: { name: chip, label: Chip, widget: string }
+
+          - { name: services_eyebrow, label: "Services Eyebrow", widget: string }
+          - { name: services_heading, label: "Services Heading", widget: string }
+          - { name: services_note, label: "Services Note", widget: text }
+          - { name: services_button_label, label: "Services Button Label", widget: string }
+
+          - { name: favorites_eyebrow, label: "Favourites Eyebrow", widget: string }
+          - { name: favorites_heading, label: "Favourites Heading", widget: string }
+          - { name: favorites_note, label: "Favourites Note", widget: text }
+          - { name: favorites_button_label, label: "Favourites Button Label", widget: string }
+          - name: favorites
+            label: "Favourites (home page rail)"
+            widget: list
+            summary: "{{title}}"
+            fields:
+              - { name: image, label: "Photo", widget: image }
+              - { name: title, label: "Vehicle / Title", widget: string }
+              - { name: tags, label: "Work Done", widget: string, hint: "Separate with |  e.g. Satin Black Wrap | Chrome Delete" }
+
+          - { name: vision_eyebrow, label: "Vision Eyebrow", widget: string }
+          - { name: vision_heading, label: "Vision Heading", widget: string }
+          - { name: vision_text, label: "Vision Text", widget: text }
+          - { name: vision_button_label, label: "Vision Button Label", widget: string }
+          - name: vision_tiles
+            label: "Vision Tiles (4)"
+            widget: list
+            fields:
+              - name: icon
+                label: Icon
+                widget: select
+                options: ["car", "trophy", "briefcase", "tools", "wheel", "sparkle", "fleet", "shield"]
+              - { name: title, label: Title, widget: string }
+              - { name: text, label: Text, widget: string }
+
+          - name: stats
+            label: "Stats Band (4)"
+            widget: list
+            fields:
+              - name: icon
+                label: Icon
+                widget: select
+                options: ["car", "pin-solid", "shield", "star", "trophy", "wheel"]
+              - { name: value, label: "Big Number", widget: string }
+              - { name: label, label: "Caption", widget: string }
+
+          - { name: about_eyebrow, label: "About Eyebrow", widget: string }
+          - { name: about_heading, label: "About Heading", widget: string }
+          - { name: about_text, label: "About Text", widget: text }
+          - name: about_points
+            label: "About Tick List"
+            widget: list
+            field: { name: point, label: Point, widget: string }
+          - { name: about_button_label, label: "About Button Label", widget: string }
+          - { name: about_image, label: "About Image", widget: image }
+
+          - { name: brands_heading, label: "Brands Heading", widget: string }
+          - name: brands
+            label: "Brands We Install"
+            widget: list
+            field: { name: brand, label: Brand, widget: string }
+
+          - { name: testimonials_heading, label: "Testimonials Heading", widget: string }
+          - { name: testimonials_image, label: "Testimonials Background", widget: image }
+
+          - { name: cta_line1, label: "CTA Line 1", widget: string }
+          - { name: cta_line2, label: "CTA Line 2 (red)", widget: string }
+          - { name: cta_text, label: "CTA Text", widget: text }
+          - { name: cta_button_label, label: "CTA Button Label", widget: string }
+
+      - name: about
+        label: "About Page"
+        file: "src/data/about.json"
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: subtitle, label: Subtitle, widget: text }
+          - { name: image, label: "Page Image", widget: image }
+          - { name: body_1, label: "Paragraph 1", widget: text }
+          - { name: body_2, label: "Paragraph 2", widget: text }
+          - { name: body_3, label: "Paragraph 3", widget: text }
+          - { name: body_4, label: "Paragraph 4", widget: text }
+          - { name: values_image, label: "Values Background", widget: image }
+          - { name: owner, label: "Owner Line", widget: string }
+          - name: values
+            label: "What We Stand For"
+            widget: list
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: text, label: Text, widget: text }
+          - { name: areas_eyebrow, label: "Areas Eyebrow", widget: string }
+          - { name: areas_heading, label: "Areas Heading", widget: string }
+          - { name: areas_intro, label: "Areas Intro", widget: text }
+          - name: areas
+            label: "Areas Served"
+            widget: list
+            field: { name: area, label: Area, widget: string }
+
+      - name: services
+        label: "Services Page"
+        file: "src/data/services.json"
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: intro, label: Intro, widget: text }
+          - { name: background_image, label: "Section Background", widget: image }
+          - name: services
+            label: "Services (first 8 show on the home page)"
+            widget: list
+            summary: "{{title}}"
+            fields:
+              - name: icon
+                label: Icon
+                widget: select
+                options: ["wrap", "graphics", "shield", "tint", "chrome", "wheel", "sparkle", "fleet", "car", "tools"]
+              - { name: title, label: "Service Name", widget: string }
+              - { name: image, label: "Photo", widget: image }
+              - { name: short, label: "Short Line (home page card)", widget: string }
+              - { name: description, label: "Full Description", widget: text }
+              - name: tags
+                label: "Tags"
+                widget: list
+                field: { name: tag, label: Tag, widget: string }
+          - { name: extras_heading, label: "Extras Heading", widget: string }
+          - { name: extras_intro, label: "Extras Intro", widget: text }
+          - name: extras
+            label: "The Full Lineup"
+            widget: list
+            summary: "{{title}}"
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: text, label: Text, widget: text }
+
+      - name: contact
+        label: "Contact Page"
+        file: "src/data/contact.json"
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: intro, label: Intro, widget: text }
+          - { name: form_heading, label: "Form Heading", widget: string }
+          - { name: form_note, label: "Form Note", widget: text }
+          - { name: form_button_label, label: "Form Button Label", widget: string }
+          - { name: reviews_title, label: "Reviews Page Title", widget: string }
+          - { name: reviews_intro, label: "Reviews Page Intro", widget: text }
+
+  # ------------------------------------------------------------------
+  # GALLERY - categories and photos
+  # ------------------------------------------------------------------
+  - name: gallery
+    label: "Gallery"
+    files:
+      - name: gallery
+        label: "Gallery Photos"
+        file: "src/data/gallery.json"
+        description: "Add a photo, pick which category it belongs to, and it appears under that filter."
+        fields:
+          - { name: title, label: Title, widget: string }
+          - { name: intro, label: Intro, widget: text }
+          - name: categories
+            label: "Categories (filter buttons)"
+            widget: list
+            summary: "{{label}}"
+            fields:
+              - { name: slug, label: "Slug (no spaces)", widget: string }
+              - { name: label, label: "Button Label", widget: string }
+          - name: photos
+            label: "Photos"
+            widget: list
+            summary: "{{cat}} - {{alt}}"
+            fields:
+              - name: cat
+                label: Category
+                widget: select
+                options:
+                  - { label: "Window Tint", value: "window-tint" }
+                  - { label: "Vinyl Wraps", value: "vinyl-wraps" }
+                  - { label: "Detailing", value: "detailing" }
+                  - { label: "Wheels & Tires", value: "wheels-tires" }
+                  - { label: "Commercial / Fleet", value: "commercial" }
+                  - { label: "Boats", value: "boats" }
+              - { name: src, label: "Photo", widget: image }
+              - { name: alt, label: "Description (for accessibility)", widget: string }
+
+  # ------------------------------------------------------------------
+  # REVIEWS
+  # ------------------------------------------------------------------
+  - name: reviews
+    label: "Reviews"
+    label_singular: "Review"
+    folder: "src/content/reviews"
+    extension: json
+    format: json
+    create: true
+    slug: "{{slug}}"
+    summary: "{{name}} - {{rating}} stars"
+    sortable_fields: ["order", "name", "rating"]
+    fields:
+      - { name: name, label: "Customer Name", widget: string }
+      - { name: order, label: "Display Order", widget: number, value_type: int, default: 10 }
+      - { name: rating, label: "Star Rating", widget: number, value_type: int, min: 1, max: 5, default: 5 }
+      - name: source
+        label: "Source"
+        widget: select
+        options: ["Google", "Facebook", "Yelp", "In Shop"]
+        default: "Google"
+      - { name: featured, label: "Show in Home Page Slider", widget: boolean, default: true }
+      - { name: quote, label: "Review Text", widget: text }
+
+  # ------------------------------------------------------------------
+  # FAQS
+  # ------------------------------------------------------------------
+  - name: faqs
+    label: "FAQs"
+    label_singular: "FAQ"
+    folder: "src/content/faqs"
+    extension: json
+    format: json
+    create: true
+    slug: "{{slug}}"
+    summary: "{{question}}"
+    sortable_fields: ["order", "question"]
+    fields:
+      - { name: order, label: "Display Order", widget: number, value_type: int, default: 10 }
+      - { name: question, label: "Question", widget: string }
+      - { name: answer, label: "Answer", widget: text }

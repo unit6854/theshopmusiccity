@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>The Shop Music City — Content Manager</title>
+  </head>
+  <body>
+    <!-- Netlify Identity widget: handles login for the Git Gateway backend -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <!-- Decap CMS -->
+    <script src="https://unpkg.com/decap-cms@^3.1.10/dist/decap-cms.js"></script>
+    <script>
+      // Send a user straight to the CMS after they accept an invite / log in.
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', (user) => {
+          if (!user) {
+            window.netlifyIdentity.on('login', () => {
+              document.location.href = '/admin/';
+            });
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

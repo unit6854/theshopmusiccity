@@ -1,0 +1,204 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import HexBackdrop from '../components/HexBackdrop.astro';
+import CtaBand from '../components/CtaBand.astro';
+import gallery from '../data/gallery.json';
+
+const counts = new Map<string, number>();
+for (const p of gallery.photos) counts.set(p.cat, (counts.get(p.cat) ?? 0) + 1);
+
+// Only offer a filter that actually has photos behind it.
+const cats = gallery.categories.filter(
+  (c) => c.slug === 'all' || (counts.get(c.slug) ?? 0) > 0
+);
+
+const label = (slug: string) =>
+  gallery.categories.find((c) => c.slug === slug)?.label ?? '';
+
+// The pipeline writes a larger copy of every photo alongside the grid version.
+const full = (src: string) => src.replace('/gallery/', '/gallery/full/');
+---
+
+<BaseLayout
+  title="Gallery | The Shop Music City"
+  description="Window tints, vinyl wraps, detailing and custom wheels from the bay at The Shop Music City in Madison, TN."
+>
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Gallery</p>
+      <h1>{gallery.title}</h1>
+      <p>{gallery.intro}</p>
+    </div>
+  </section>
+
+  <section class="section hex-page">
+    <HexBackdrop />
+    <div class="container">
+      <div class="gallery-filters" role="tablist" aria-label="Filter gallery by service">
+        {
+          cats.map((c, i) => (
+            <button
+              class:list={['filter-pill', i === 0 && 'is-active']}
+              type="button"
+              role="tab"
+              aria-selected={i === 0 ? 'true' : 'false'}
+              data-filter={c.slug}
+            >
+              {c.label}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="gallery-rule"></div>
+
+      <div class="masonry" id="galleryGrid">
+        {
+          gallery.photos.map((p, i) => (
+            <button
+              class="masonry-item"
+              type="button"
+              data-cat={p.cat}
+              data-index={i}
+              data-full={full(p.src)}
+              data-caption={p.alt}
+              data-cat-label={label(p.cat)}
+              aria-label={`View larger: ${p.alt}`}
+            >
+              <img src={p.src} alt={p.alt} loading="lazy" />
+              <span class="masonry-zoom" aria-hidden="true">
+                <Icon name="search" size={20} />
+              </span>
+            </button>
+          ))
+        }
+      </div>
+
+      <p class="gallery-empty" id="galleryEmpty" hidden>Nothing in this category yet — check back soon.</p>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <CtaBand />
+
+  <!-- ================= LIGHTBOX ================= -->
+  <div class="lightbox" id="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button class="lightbox-close" type="button" data-lb-close aria-label="Close viewer">
+      <Icon name="close" size={22} />
+    </button>
+    <button class="lightbox-nav lightbox-prev" type="button" data-lb-prev aria-label="Previous photo">
+      <Icon name="chevron-left" size={26} />
+    </button>
+    <figure class="lightbox-stage">
+      <img id="lightboxImg" src="" alt="" />
+      <figcaption>
+        <span class="lightbox-cat" id="lightboxCat"></span>
+        <span class="lightbox-caption" id="lightboxCaption"></span>
+      </figcaption>
+    </figure>
+    <button class="lightbox-nav lightbox-next" type="button" data-lb-next aria-label="Next photo">
+      <Icon name="chevron" size={26} />
+    </button>
+  </div>
+</BaseLayout>
+
+<script>
+  // Filtering runs client-side over one rendered set, and the lightbox walks
+  // only the photos currently visible so prev/next respects the active filter.
+  const wire = () => {
+    const grid = document.getElementById('galleryGrid');
+    const box = document.getElementById('lightbox');
+    if (!grid || !box) return;
+
+    const empty = document.getElementById('galleryEmpty');
+    const img = document.getElementById('lightboxImg') as HTMLImageElement | null;
+    const capEl = document.getElementById('lightboxCaption');
+    const catEl = document.getElementById('lightboxCat');
+    const pills = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const items = Array.from(grid.querySelectorAll<HTMLElement>('.masonry-item'));
+
+    let visible: HTMLElement[] = items.slice();
+    let at = -1;
+    let lastFocus: HTMLElement | null = null;
+
+    const apply = (cat: string) => {
+      visible = [];
+      items.forEach((el) => {
+        const match = cat === 'all' || el.dataset.cat === cat;
+        el.hidden = !match;
+        if (match) visible.push(el);
+      });
+      if (empty) empty.hidden = visible.length > 0;
+    };
+
+    const show = (n: number) => {
+      if (!visible.length || !img) return;
+      at = (n + visible.length) % visible.length;
+      const el = visible[at];
+      img.src = el.dataset.full ?? '';
+      img.alt = el.dataset.caption ?? '';
+      if (capEl) capEl.textContent = el.dataset.caption ?? '';
+      if (catEl) catEl.textContent = el.dataset.catLabel ?? '';
+    };
+
+    const open = (el: HTMLElement) => {
+      lastFocus = el;
+      show(visible.indexOf(el));
+      box.hidden = false;
+      box.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('nav-locked');
+      // Force a reflow so the opacity transition has a start frame. rAF would
+      // do it too, but it never fires while the tab is backgrounded, which
+      // leaves the lightbox mounted at opacity 0.
+      void box.offsetWidth;
+      box.classList.add('is-open');
+      (box.querySelector('[data-lb-close]') as HTMLElement | null)?.focus();
+    };
+
+    const close = () => {
+      box.classList.remove('is-open');
+      box.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('nav-locked');
+      window.setTimeout(() => {
+        box.hidden = true;
+        if (img) img.src = '';
+      }, 200);
+      lastFocus?.focus();
+    };
+
+    items.forEach((el) => el.addEventListener('click', () => open(el)));
+
+    pills.forEach((pill) =>
+      pill.addEventListener('click', () => {
+        pills.forEach((p) => {
+          const on = p === pill;
+          p.classList.toggle('is-active', on);
+          p.setAttribute('aria-selected', String(on));
+        });
+        apply(pill.dataset.filter ?? 'all');
+      })
+    );
+
+    box.querySelector('[data-lb-close]')?.addEventListener('click', close);
+    box.querySelector('[data-lb-prev]')?.addEventListener('click', () => show(at - 1));
+    box.querySelector('[data-lb-next]')?.addEventListener('click', () => show(at + 1));
+    // clicking the backdrop closes; clicking the photo or a control does not
+    box.addEventListener('click', (e) => {
+      if (e.target === box) close();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (box.hidden) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(at - 1);
+      if (e.key === 'ArrowRight') show(at + 1);
+    });
+
+    apply('all');
+  };
+
+  wire();
+  document.addEventListener('astro:page-load', wire);
+</script>

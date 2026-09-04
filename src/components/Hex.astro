@@ -1,0 +1,16 @@
+---
+import Icon from './Icon.astro';
+interface Props { icon: string; size?: number }
+const { icon, size = 24 } = Astro.props;
+---
+
+<span class="hex">
+  <svg class="hex-frame" viewBox="0 0 56 62" fill="none" aria-hidden="true">
+    <path
+      d="M28 1.6 53.4 16v30L28 60.4 2.6 46V16z"
+      stroke="currentColor"
+      stroke-width="1.6"
+    />
+  </svg>
+  <Icon name={icon} size={size} class="hex-icon" />
+</span>

@@ -1,0 +1,18 @@
+---
+import Icon from './Icon.astro';
+import type { Review } from '../lib/content';
+interface Props { review: Review }
+const { review } = Astro.props;
+---
+
+<article class="review-card tilt">
+  <span class="glow" aria-hidden="true"></span>
+  <div class="stars" aria-label={`${review.rating} star rating`}>
+    {Array.from({ length: review.rating }).map(() => <Icon name="star" size={18} />)}
+  </div>
+  <blockquote>“{review.quote}”</blockquote>
+  <div>
+    <div class="who">– {review.name}</div>
+    {review.source && <div class="src">via {review.source}</div>}
+  </div>
+</article>

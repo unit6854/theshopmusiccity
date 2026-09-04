@@ -1,0 +1,29 @@
+{
+  "business_name": "The Shop Music City",
+  "tagline": "All Things Custom",
+  "location_line": "Madison, TN",
+  "logo": "/images/logo.webp",
+  "phone": "(615) 474-4773",
+  "phone_link": "tel:+16154744773",
+  "email": "theshopmusiccity@gmail.com",
+  "address_line1": "517 Myatt Drive, Suite A",
+  "address_line2": "Madison, TN 37115",
+  "map_url": "https://www.google.com/maps/dir/?api=1&destination=517+Myatt+Drive+Suite+A+Madison+TN+37115",
+  "facebook_url": "https://www.facebook.com/theshopmusiccity",
+  "google_url": "https://www.google.com/search?q=The+Shop+Music+City+Madison+TN",
+  "instagram_url": "https://www.instagram.com/theshopmusiccity",
+  "rating": "5.0",
+  "review_count": "30",
+  "founded": "2019",
+  "footer_blurb": "Your friend in custom automotive. Window tinting, vinyl wraps, and detailing — built right in Madison, TN since 2019.",
+  "payment_methods": "Visa, MasterCard, Amex, Discover, Debit, Checks, Zelle, Cash App, Apple Pay, Android Pay",
+  "hours": [
+    { "days": "Monday", "time": "9:00 AM – 5:30 PM" },
+    { "days": "Tuesday", "time": "9:00 AM – 5:30 PM" },
+    { "days": "Wednesday", "time": "9:00 AM – 5:30 PM" },
+    { "days": "Thursday", "time": "9:00 AM – 5:30 PM" },
+    { "days": "Friday", "time": "9:00 AM – 5:30 PM" },
+    { "days": "Saturday", "time": "By Appointment Only" },
+    { "days": "Sunday", "time": "Closed" }
+  ]
+}

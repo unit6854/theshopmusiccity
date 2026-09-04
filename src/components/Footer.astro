@@ -1,0 +1,79 @@
+---
+import Icon from './Icon.astro';
+import settings from '../data/settings.json';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col footer-brand">
+        <a href="/" aria-label={`${settings.business_name} home`}>
+          <img src={settings.logo} alt={settings.business_name} width="1000" height="573" />
+        </a>
+        <p class="footer-blurb">{settings.footer_blurb}</p>
+        <div class="socials">
+          <a href={settings.facebook_url} target="_blank" rel="noopener" aria-label="Facebook">
+            <Icon name="facebook" size={18} />
+          </a>
+          <a href={settings.instagram_url} target="_blank" rel="noopener" aria-label="Instagram">
+            <Icon name="instagram" size={18} />
+          </a>
+          <a href={settings.google_url} target="_blank" rel="noopener" aria-label="Google">
+            <Icon name="google" size={18} />
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h3>Explore</h3>
+        <div class="footer-links">
+          <a href="/">Home</a>
+          <a href="/gallery">Gallery</a>
+          <a href="/services">Services</a>
+          <a href="/reviews">Reviews</a>
+          <a href="/about">About</a>
+          <a href="/faq">FAQ</a>
+          <a href="/contact">Contact</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h3>Visit</h3>
+        <ul class="footer-contact">
+          <li>
+            <Icon name="pin" size={18} />
+            <span>{settings.address_line1}<br />{settings.address_line2}</span>
+          </li>
+          <li>
+            <Icon name="phone" size={18} />
+            <a href={settings.phone_link}>{settings.phone}</a>
+          </li>
+          <li>
+            <Icon name="mail" size={18} />
+            <a href={`mailto:${settings.email}`}>{settings.email}</a>
+          </li>
+          <li>
+            <Icon name="clock" size={18} />
+            <span>Mon–Fri 9:00 AM – 5:30 PM<br />Sat by appointment · Sun closed</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <div class="container">
+      <span>© {year} {settings.business_name}. All Rights Reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="mobile-call" href={settings.phone_link}>
+  <span class="mobile-call-icon"><Icon name="phone" size={16} /></span>
+  <span class="mobile-call-text">
+    <span class="mobile-call-label">Call The Shop</span>
+    <span class="mobile-call-number">{settings.phone}</span>
+  </span>
+</a>

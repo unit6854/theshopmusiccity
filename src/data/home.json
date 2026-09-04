@@ -1,0 +1,135 @@
+{
+  "hero_image": "/images/hero-bg.webp",
+  "hero_image_mobile": "/images/hero-bg-mobile.webp",
+  "hero_eyebrow": "Madison, TN · Since 2019",
+  "hero_title_line1": "Your Friend In",
+  "hero_title_line2": "Custom Automotive.",
+  "hero_lead": "",
+  "hero_text": "Premier window tinting, vinyl wraps, and detailing — built with expert craftsmanship and a passion for getting it right the first time.",
+  "hero_button_label": "Get a Free Quote",
+  "hero_button_link": "/contact",
+  "hero_chips": [
+    "Wraps",
+    "PPF",
+    "Tint",
+    "Custom Builds"
+  ],
+  "services_eyebrow": "What We Do",
+  "services_heading": "Premium Customization",
+  "services_note": "High quality services to transform your vehicle inside and out.",
+  "services_button_label": "View All Services",
+  "favorites_eyebrow": "The Work Speaks For Itself",
+  "favorites_heading": "Some Of Our Favorites",
+  "favorites_note": "A small slice of the trucks, sports cars, and daily drivers that have rolled through our bay.",
+  "favorites_button_label": "See Full Gallery",
+  "favorites": [
+    {
+      "image": "/images/fav-porsche-satin.webp",
+      "title": "Porsche Boxster",
+      "tags": "Satin Black Wrap | Wheel Refinish"
+    },
+    {
+      "image": "/images/fav-blue-carbon.webp",
+      "title": "Corvette C5",
+      "tags": "Blue & Carbon Wrap | Chrome Delete"
+    },
+    {
+      "image": "/images/fav-mini-cooper.webp",
+      "title": "Mini Cooper JCW",
+      "tags": "Roof Wrap | Stripe Package"
+    },
+    {
+      "image": "/images/fav-corvette-c8.webp",
+      "title": "Corvette C8",
+      "tags": "Full Detail | Ceramic Coating"
+    },
+    {
+      "image": "/images/fav-truck-tint.webp",
+      "title": "Truck & Shell",
+      "tags": "Ceramic Tint | Full Blackout"
+    },
+    {
+      "image": "/images/fav-commercial-trailer.webp",
+      "title": "Exterior Solutions",
+      "tags": "Commercial Graphics | Fleet"
+    },
+    {
+      "image": "/images/fav-windshield-tint.webp",
+      "title": "Windshield Tint",
+      "tags": "Geoshield Film | Heat Rejection"
+    }
+  ],
+  "vision_eyebrow": "What Are You Building?",
+  "vision_heading": "Every Build Starts With Your Vision.",
+  "vision_text": "Tell us what you're looking for and we'll help bring it to life.",
+  "vision_button_label": "Get Your Free Quote",
+  "vision_tiles": [
+    {
+      "icon": "car",
+      "title": "My Daily",
+      "text": "Make it look better."
+    },
+    {
+      "icon": "trophy",
+      "title": "My Show Car",
+      "text": "Make it unforgettable."
+    },
+    {
+      "icon": "briefcase",
+      "title": "My Business",
+      "text": "Turn it into a mobile billboard."
+    },
+    {
+      "icon": "tools",
+      "title": "My Project",
+      "text": "Build something completely custom."
+    }
+  ],
+  "stats": [
+    {
+      "icon": "car",
+      "value": "2019",
+      "label": "Locally Owned Since"
+    },
+    {
+      "icon": "pin-solid",
+      "value": "15+",
+      "label": "Areas Served"
+    },
+    {
+      "icon": "shield",
+      "value": "100%",
+      "label": "Quality Focus"
+    },
+    {
+      "icon": "star",
+      "value": "5★",
+      "label": "Customer Rated"
+    }
+  ],
+  "about_eyebrow": "About The Shop",
+  "about_heading": "Built In Madison. Trusted Across Music City.",
+  "about_text": "Since 2019, we've been Middle Tennessee's go-to shop for the work that makes a vehicle feel like yours. Owner-operator Justin and his team treat every car as if it were their own.",
+  "about_points": [
+    "Owner-operated, locally rooted",
+    "Geoshield, 3M, Avery Dennison, Toyo & more",
+    "Workmanship we stand behind, every time",
+    "Cars, trucks, boats & commercial fleets"
+  ],
+  "about_button_label": "Our Story",
+  "about_image": "/images/big-truck.webp",
+  "brands_heading": "Trusted Brands We Install",
+  "brands": [
+    "Geoshield",
+    "3M",
+    "Avery Dennison",
+    "Toyo Tires",
+    "KG1 Forged"
+  ],
+  "testimonials_heading": "What Our Customers Say",
+  "testimonials_image": "/images/truck-red.webp",
+  "cta_line1": "Ready To Build",
+  "cta_line2": "Something Different?",
+  "cta_text": "Call, message, or stop by the shop on Myatt Drive. We'll talk through your vehicle and what you have in mind — no pressure, just honest advice.",
+  "cta_button_label": "Get a Quote"
+}

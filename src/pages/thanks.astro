@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import settings from '../data/settings.json';
+---
+
+<BaseLayout title="Request Received | The Shop Music City">
+  <section class="section" style="min-height:56vh; display:flex; align-items:center;">
+    <div class="container" style="text-align:center;">
+      <p class="eyebrow">Thank You</p>
+      <h1 style="font-size:clamp(2rem,4vw,3.2rem); margin-top:10px;">Request Received</h1>
+      <p style="max-width:52ch; margin:20px auto 0;">
+        Thanks for reaching out to {settings.business_name}. This is a demonstration site, so no message was
+        actually sent — on the live site we'd get straight back to you with a quote.
+      </p>
+      <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-top:28px;">
+        <a class="btn-flare" href={settings.phone_link}>
+          <span class="btn-flare-icon"><Icon name="phone" size={18} /></span>
+          <span class="btn-flare-label">Call {settings.phone}</span>
+        </a>
+        <a class="btn" href="/">
+          Back Home
+          <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

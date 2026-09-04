@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import FaqList from '../components/FaqList.astro';
+import contact from '../data/contact.json';
+import settings from '../data/settings.json';
+---
+
+<BaseLayout
+  title="Contact | The Shop Music City"
+  description={`Call ${settings.phone} or stop by 517 Myatt Drive, Suite A in Madison, TN. Window tint, wraps, PPF and detailing quotes.`}
+>
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Contact</p>
+      <h1>{contact.title}</h1>
+      <p>{contact.intro}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="info-grid">
+        <article class="info-card">
+          <h3>Address</h3>
+          <address>
+            {settings.address_line1}<br />
+            {settings.address_line2}
+          </address>
+          <p style="margin-top:12px;">
+            <a href={settings.map_url} target="_blank" rel="noopener">Get directions →</a>
+          </p>
+        </article>
+
+        <article class="info-card">
+          <h3>Phone</h3>
+          <p><a href={settings.phone_link}>{settings.phone}</a></p>
+          <h3 style="margin-top:20px;">Email</h3>
+          <p><a href={`mailto:${settings.email}`}>{settings.email}</a></p>
+        </article>
+
+        <article class="info-card">
+          <h3>Hours</h3>
+          <table class="hours-table">
+            <tbody>
+              {
+                settings.hours.map((h) => (
+                  <tr>
+                    <td>{h.days}</td>
+                    <td>{h.time}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </article>
+
+        <article class="info-card">
+          <h3>Payment</h3>
+          <p>{settings.payment_methods}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <section class="section">
+    <div class="container" style="max-width:900px;">
+      <QuoteForm />
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <section class="section">
+    <div class="container" style="max-width:900px;">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Before You Call</p>
+          <h2>Common Questions.</h2>
+        </div>
+      </div>
+      <FaqList limit={4} />
+      <div class="section-foot">
+        <a class="btn btn--sm" href="/faq">
+          All FAQs
+          <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

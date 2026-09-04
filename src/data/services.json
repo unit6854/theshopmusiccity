@@ -1,0 +1,187 @@
+{
+  "title": "Everything We Do",
+  "intro": "Three specialties at our core, plus the full lineup of protection, performance, and personalization services that round out the build.",
+  "background_image": "/images/hex-wall.webp",
+  "services": [
+    {
+      "icon": "wrap",
+      "title": "Vehicle Wraps",
+      "image": "/images/svc-vehicle-wraps-0.webp",
+      "short": "Full & partial color change wraps.",
+      "description": "Transform your vehicle and make a bold statement with premium vinyl. From subtle color changes to eye-catching custom designs, a wrap lets you personalize your car without the permanence or cost of a new paint job. We use top-of-the-line 3M and Avery Dennison materials that protect your original paint while turning heads.",
+      "tags": [
+        "Color Change",
+        "Custom Graphics",
+        "Commercial Wraps",
+        "Partial Wraps",
+        "Chrome Delete"
+      ],
+      "images": [
+        "/images/svc-vehicle-wraps-0.webp",
+        "/images/svc-vehicle-wraps-1.webp",
+        "/images/svc-vehicle-wraps-2.webp"
+      ]
+    },
+    {
+      "icon": "graphics",
+      "title": "Custom Graphics",
+      "image": "/images/svc-custom-graphics-0.webp",
+      "short": "Unique designs. Built around you.",
+      "description": "Camo, fades, racing stripes, livery, one-off artwork — if you can picture it, we can lay it down. We design around your vehicle's lines so the finished graphic looks like it left the factory that way.",
+      "tags": [
+        "Custom Design",
+        "Camo & Fades",
+        "Racing Stripes",
+        "Livery"
+      ],
+      "images": [
+        "/images/svc-custom-graphics-0.webp",
+        "/images/svc-custom-graphics-1.webp"
+      ]
+    },
+    {
+      "icon": "shield",
+      "title": "Paint Protection",
+      "image": "/images/svc-paint-protection-0.webp",
+      "short": "Protect your paint without sacrificing appearance.",
+      "description": "Paint protection film is a virtually invisible shield against road debris, scratches, and environmental damage. Pair it with a ceramic coating for a deep, glossy finish that makes maintenance simple and holds up for years.",
+      "tags": [
+        "Paint Protection Film",
+        "Ceramic Coating",
+        "Full Front",
+        "Track Pack"
+      ],
+      "images": [
+        "/images/svc-paint-protection-0.webp",
+        "/images/svc-paint-protection-1.webp"
+      ]
+    },
+    {
+      "icon": "tint",
+      "title": "Window Tint",
+      "image": "/images/svc-window-tint-0.webp",
+      "short": "Premium tint for privacy, protection & style.",
+      "description": "Our window tinting is designed to balance style, privacy, and protection. Using high-quality Geoshield films and expert installation, we deliver a seamless, bubble-free finish that blocks harmful UV rays and cuts interior heat. Cars, trucks, boats, commercial fleets, storefronts and homes.",
+      "tags": [
+        "Automotive",
+        "Commercial Fleet",
+        "Boat",
+        "Residential",
+        "Ceramic"
+      ],
+      "images": [
+        "/images/svc-window-tint-0.webp",
+        "/images/svc-window-tint-1.webp",
+        "/images/svc-window-tint-2.webp"
+      ]
+    },
+    {
+      "icon": "chrome",
+      "title": "Chrome Delete",
+      "image": "/images/svc-chrome-delete-0.webp",
+      "short": "Clean up the chrome and sharpen the look.",
+      "description": "Trim, badges, window surrounds, grille and mirror caps wrapped in gloss or satin black. It is the fastest way to modernize an older vehicle and it comes right back off if you ever want the chrome again.",
+      "tags": [
+        "Gloss Black",
+        "Satin Black",
+        "Badges & Trim",
+        "Grille"
+      ],
+      "images": [
+        "/images/svc-chrome-delete-0.webp",
+        "/images/svc-chrome-delete-1.webp"
+      ]
+    },
+    {
+      "icon": "wheel",
+      "title": "Custom Builds",
+      "image": "/images/svc-custom-builds-0.webp",
+      "short": "Wheels, accents, lighting & more.",
+      "description": "Lifts, levelling kits, wheels and tires from our KG1 Forged and Toyo lineup, lighting, and the aftermarket parts most shops won't chase down. Tell us the build and we will source it and fit it.",
+      "tags": [
+        "Wheels & Tires",
+        "Lifts & Levelling",
+        "Lighting",
+        "Part Sourcing"
+      ],
+      "images": [
+        "/images/svc-custom-builds-0.webp",
+        "/images/svc-custom-builds-1.webp",
+        "/images/svc-custom-builds-2.webp",
+        "/images/svc-custom-builds-3.webp",
+        "/images/svc-custom-builds-4.webp",
+        "/images/svc-custom-builds-5.webp"
+      ]
+    },
+    {
+      "icon": "sparkle",
+      "title": "Detailing",
+      "image": "/images/svc-detailing-0.webp",
+      "short": "Finish the build with a showroom level finish.",
+      "description": "We go well beyond a standard wash — deep cleaning, paint correction, and long-lasting protection. From a quick refresh to a full package with ceramic coatings and paint protection film, each service is tailored to the vehicle in front of us.",
+      "tags": [
+        "Paint Correction",
+        "Ceramic Coating",
+        "Interior Detail",
+        "Wash & Wax"
+      ],
+      "images": [
+        "/images/svc-detailing-0.webp",
+        "/images/svc-detailing-1.webp",
+        "/images/svc-detailing-2.webp"
+      ]
+    },
+    {
+      "icon": "fleet",
+      "title": "Fleet Wraps",
+      "image": "/images/svc-fleet-wraps-0.webp",
+      "short": "Turn your work vehicles into rolling advertisements.",
+      "description": "Vans, box trucks, trailers and service fleets wrapped in a consistent, on-brand look. We handle single vehicles and full fleets, and we keep your artwork on file so vehicle number twelve matches vehicle number one.",
+      "tags": [
+        "Fleet Branding",
+        "Box Trucks",
+        "Trailers",
+        "Commercial Tint"
+      ],
+      "images": [
+        "/images/svc-fleet-wraps-0.webp"
+      ]
+    }
+  ],
+  "extras_heading": "The Full Lineup",
+  "extras_intro": "Beyond our core services, here's the rest of what we do.",
+  "extras": [
+    {
+      "title": "Paint Protection Film",
+      "text": "Virtually invisible shield against road debris, scratches, and environmental damage."
+    },
+    {
+      "title": "Ceramic Coating",
+      "text": "Long-lasting glossy finish that makes maintenance simple and protects paint for years."
+    },
+    {
+      "title": "Wheels & Tires",
+      "text": "Extensive selection including KG1 Forged and Toyo Tires — performance and style."
+    },
+    {
+      "title": "Boat Tinting",
+      "text": "Protect your watercraft from sun exposure while enhancing its look on the water."
+    },
+    {
+      "title": "Commercial Vehicle Tinting",
+      "text": "Sleek uniform look for fleets, improved comfort, and better energy efficiency."
+    },
+    {
+      "title": "Commercial & Residential Film",
+      "text": "Geoshield films for storefronts, offices, and homes — heat rejection and privacy."
+    },
+    {
+      "title": "Aftermarket Part Sourcing",
+      "text": "Hard-to-find parts and accessories — we'll track it down for you."
+    },
+    {
+      "title": "Automotive Accessories",
+      "text": "From small finishing touches to major upgrades, we stock and install."
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+---
+import Icon from './Icon.astro';
+import settings from '../data/settings.json';
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+
+const links = [
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/services' },
+  { label: 'Gallery', href: '/gallery' },
+  { label: 'About', href: '/about' },
+  { label: 'Reviews', href: '/reviews' },
+  { label: 'FAQ', href: '/faq' },
+  { label: 'Contact', href: '/contact' },
+];
+---
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label={`${settings.business_name} home`}>
+      <img src={settings.logo} alt={settings.business_name} width="1000" height="573" />
+    </a>
+
+    <nav class="main-nav" id="mainNav" aria-label="Main">
+      {
+        links.map((l) => (
+          <a href={l.href} aria-current={path === l.href ? 'page' : undefined}>
+            {l.label}
+          </a>
+        ))
+      }
+      <a class="nav-quote" href="/contact">Get a Quote</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="icon-btn icon-btn--accent" href={settings.phone_link} aria-label={`Call ${settings.phone}`}>
+        <Icon name="phone" size={19} />
+      </a>
+      <button
+        class="icon-btn nav-toggle"
+        id="navToggle"
+        aria-expanded="false"
+        aria-controls="mainNav"
+        aria-label="Toggle navigation"
+      >
+        <span class="nav-toggle-open"><Icon name="menu" size={21} /></span>
+        <span class="nav-toggle-close"><Icon name="close" size={21} /></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Bound on every view transition, not just first load, because astro:page-load
+  // fires for each navigation once the ClientRouter is in play.
+  const wire = () => {
+    const toggle = document.getElementById('navToggle');
+    const nav = document.getElementById('mainNav');
+    if (!toggle || !nav) return;
+
+    const setOpen = (open: boolean) => {
+      nav.classList.toggle('is-open', open);
+      document.body.classList.toggle('nav-locked', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+
+    toggle.addEventListener('click', () => setOpen(!nav.classList.contains('is-open')));
+    nav.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  };
+
+  wire();
+  document.addEventListener('astro:page-load', wire);
+</script>

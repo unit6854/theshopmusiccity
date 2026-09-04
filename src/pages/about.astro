@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import HexBackdrop from '../components/HexBackdrop.astro';
+import CtaBand from '../components/CtaBand.astro';
+import about from '../data/about.json';
+import settings from '../data/settings.json';
+---
+
+<BaseLayout
+  title="About | The Shop Music City"
+  description="Owner-operated in Madison, TN since 2019 — window tinting, vinyl wraps, paint protection and detailing across Middle Tennessee."
+>
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">About</p>
+      <h1>{about.title}</h1>
+      <p>{about.subtitle}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-media">
+          <img src={about.image} alt="Inside The Shop Music City" loading="lazy" width="1870" height="841" />
+        </div>
+        <div class="about-copy">
+          <p>{about.body_1}</p>
+          <p>{about.body_2}</p>
+        </div>
+      </div>
+
+      <div style="max-width:74ch; margin:clamp(28px,4vw,48px) auto 0;">
+        <p>{about.body_3}</p>
+        <p>{about.body_4}</p>
+        <p class="svc-num" style="margin-top:22px;">{about.owner}</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <section class="section hex-page">
+    <HexBackdrop />
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">What We Stand For</p>
+          <h2>Why People Keep Coming Back.</h2>
+        </div>
+      </div>
+
+      <div class="extras-grid">
+        {
+          about.values.map((v) => (
+            <article class="extra-card">
+              <h3>{v.title}</h3>
+              <p>{v.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">{about.areas_eyebrow}</p>
+          <h2>{about.areas_heading}</h2>
+        </div>
+        <p class="section-note">{about.areas_intro}</p>
+      </div>
+
+      <ul class="areas-list">
+        {about.areas.map((a) => <li>{a}</li>)}
+      </ul>
+
+      <div class="section-foot">
+        <a class="btn" href={settings.map_url} target="_blank" rel="noopener">
+          Get Directions
+          <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <CtaBand />
+</BaseLayout>

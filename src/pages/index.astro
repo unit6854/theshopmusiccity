@@ -1,0 +1,297 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import Hex from '../components/Hex.astro';
+import Testimonials from '../components/Testimonials.astro';
+import CtaBand from '../components/CtaBand.astro';
+import HexBackdrop from '../components/HexBackdrop.astro';
+import settings from '../data/settings.json';
+import home from '../data/home.json';
+import servicesData from '../data/services.json';
+
+const services = servicesData.services.slice(0, 8);
+---
+
+<BaseLayout>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <picture class="hero-bg">
+      <source media="(max-width: 780px)" srcset={home.hero_image_mobile} />
+      <img src={home.hero_image} alt="" fetchpriority="high" width="1440" height="817" />
+    </picture>
+
+    <div class="container">
+      <div class="hero-inner">
+        <p class="eyebrow">{home.hero_eyebrow}</p>
+        <h1>
+          {home.hero_title_line1}
+          <span class="line-2">{home.hero_title_line2}</span>
+        </h1>
+        {home.hero_lead && <p class="hero-lead">{home.hero_lead}</p>}
+        <p class="hero-copy">{home.hero_text}</p>
+
+        <a class="btn-flare" href={home.hero_button_link}>
+          <span class="btn-flare-label">{home.hero_button_label}</span>
+          <span class="btn-flare-arrow"><Icon name="chevron" size={18} /></span>
+        </a>
+
+        <ul class="hero-chips">
+          {
+            home.hero_chips.map((c) => (
+              <li>
+                <Icon name="check" size={17} />
+                <span>{c}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SERVICES ================= -->
+  <section class="section services hex-page" id="services">
+    <HexBackdrop />
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">{home.services_eyebrow}</p>
+          <h2>{home.services_heading}</h2>
+        </div>
+        <p class="section-note">{home.services_note}</p>
+      </div>
+
+      <div class="service-grid" data-stagger>
+        {
+          services.map((s, i) => (
+            <a class="service-card tilt" href="/services" style={`--i:${i}`}>
+              <span class="glow" aria-hidden="true" />
+              <span
+                class="card-media"
+                data-frames={JSON.stringify(s.images ?? [s.image])}
+                data-offset={i}
+              >
+                <img class="card-img is-on" src={(s.images ?? [s.image])[0]} alt="" loading="lazy" width="800" height="600" />
+                <img class="card-img card-img--next" alt="" aria-hidden="true" width="800" height="600" />
+              </span>
+              <span class="service-card-body">
+                <Hex icon={s.icon} size={24} />
+                <h3>{s.title}</h3>
+                <p>{s.short}</p>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="section-foot">
+        <a class="btn btn--sm" href="/services">
+          {home.services_button_label}
+          <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <!-- ================= FAVOURITES ================= -->
+  <section class="section favorites">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">{home.favorites_eyebrow}</p>
+          <h2>{home.favorites_heading}</h2>
+        </div>
+        <a class="btn btn--sm" href="/gallery">
+          {home.favorites_button_label}
+          <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
+        </a>
+      </div>
+      <p class="section-note section-note--wide">{home.favorites_note}</p>
+    </div>
+
+    <div class="fav-rail" data-rail>
+      <div class="fav-track">
+        {
+          home.favorites.map((f) => (
+            <a class="fav-card" href="/gallery">
+              <img src={f.image} alt={f.title} loading="lazy" width="900" height="1125" />
+              <span class="fav-meta">
+                <span class="fav-title">{f.title}</span>
+                <span class="fav-tags">{f.tags}</span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <!-- ================= VISION ================= -->
+  <section class="section vision">
+    <div class="container">
+      <div class="vision-grid">
+        <div class="vision-copy">
+          <p class="eyebrow">{home.vision_eyebrow}</p>
+          <h2>{home.vision_heading}</h2>
+          <p>{home.vision_text}</p>
+        </div>
+
+        <ul class="vision-tiles">
+          {
+            home.vision_tiles.map((t) => (
+              <li class="vision-tile">
+                <Icon name={t.icon} size={30} stroke={1.5} />
+                <h3>{t.title}</h3>
+                <p>{t.text}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="vision-cta">
+        <a class="btn-flare btn-flare--wide" href="/contact">
+          <span class="btn-flare-label">{home.vision_button_label}</span>
+          <span class="btn-flare-arrow"><Icon name="chevron" size={18} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= STATS ================= -->
+  <section class="stats-band">
+    <div class="container">
+      <ul class="stats-grid">
+        {
+          home.stats.map((s) => (
+            <li class="stat">
+              <Hex icon={s.icon} size={22} />
+              <div>
+                <div class="stat-value">{s.value}</div>
+                <div class="stat-label">{s.label}</div>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="section about-home">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-media">
+          <img src={home.about_image} alt="Inside The Shop Music City" loading="lazy" width="1870" height="841" />
+        </div>
+
+        <div class="about-copy">
+          <p class="eyebrow">{home.about_eyebrow}</p>
+          <h2>{home.about_heading}</h2>
+          <p>{home.about_text}</p>
+          <ul class="check-list">
+            {
+              home.about_points.map((p) => (
+                <li>
+                  <Icon name="check" size={19} />
+                  <span>{p}</span>
+                </li>
+              ))
+            }
+          </ul>
+          <a class="btn btn--sm" href="/about">
+            {home.about_button_label}
+            <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
+          </a>
+        </div>
+      </div>
+
+      <div class="brands">
+        <p class="brands-heading">{home.brands_heading}</p>
+        <ul class="brands-list">
+          {home.brands.map((b) => <li>{b}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="band-sep"></div>
+
+  <!-- ================= TESTIMONIALS ================= -->
+  <Testimonials />
+
+  <div class="band-sep"></div>
+
+  <!-- ================= CTA ================= -->
+  <CtaBand />
+</BaseLayout>
+
+<script>
+  // Service cards cross-dissolve through the owner's ranked shots for that
+  // service. Two stacked <img> layers so the swap never flashes, and each card
+  // is offset so the grid doesn't change all at once.
+  const wireCardRotation = () => {
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still) return;
+
+    const HOLD = 3000;
+
+    document.querySelectorAll<HTMLElement>('.card-media').forEach((media) => {
+      if (media.dataset.rotating) return;
+
+      let frames: string[] = [];
+      try {
+        frames = JSON.parse(media.dataset.frames ?? '[]');
+      } catch {
+        return;
+      }
+      if (frames.length < 2) return;
+
+      media.dataset.rotating = '1';
+
+      const layers = media.querySelectorAll<HTMLImageElement>('.card-img');
+      const front = layers[0];
+      const back = layers[1];
+      if (!front || !back) return;
+
+      // warm the cache so a swap never lands on a half-loaded frame
+      frames.slice(1).forEach((src) => {
+        const pre = new Image();
+        pre.src = src;
+      });
+
+      let at = 0;
+      let showingFront = true;
+
+      const step = () => {
+        at = (at + 1) % frames.length;
+        const incoming = showingFront ? back : front;
+        const outgoing = showingFront ? front : back;
+
+        incoming.src = frames[at];
+        const reveal = () => {
+          incoming.classList.add('is-on');
+          outgoing.classList.remove('is-on');
+          showingFront = !showingFront;
+        };
+        if (incoming.complete) reveal();
+        else incoming.addEventListener('load', reveal, { once: true });
+      };
+
+      const offset = Number(media.dataset.offset ?? 0) * 380;
+      window.setTimeout(() => {
+        const timer = window.setInterval(step, HOLD);
+        document.addEventListener('astro:before-swap', () => clearInterval(timer), { once: true });
+      }, offset);
+    });
+  };
+
+  wireCardRotation();
+  document.addEventListener('astro:page-load', wireCardRotation);
+</script>

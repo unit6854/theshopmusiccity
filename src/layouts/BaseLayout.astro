@@ -1,0 +1,187 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+import '../styles/shop.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import settings from '../data/settings.json';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = `${settings.business_name} | Window Tint, Vinyl Wraps & Detailing in Madison, TN`,
+  description = `Window tinting, vinyl wraps, paint protection and detailing in Madison, TN. Call ${settings.phone} to talk through your build with ${settings.business_name}.`,
+} = Astro.props;
+
+const SITE = 'https://theshopmusiccity.netlify.app';
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE);
+const ogImage = new URL('/og.png', Astro.site ?? SITE);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={settings.business_name} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${settings.business_name} - custom automotive in Madison, TN`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="theme-color" content="#e2102f" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap"
+    />
+
+    <ClientRouter />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'AutoBodyShop',
+        name: settings.business_name,
+        slogan: settings.tagline,
+        telephone: settings.phone,
+        email: settings.email,
+        url: SITE,
+        foundingDate: settings.founded,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: settings.address_line1,
+          addressLocality: 'Madison',
+          addressRegion: 'TN',
+          postalCode: '37115',
+          addressCountry: 'US',
+        },
+        openingHoursSpecification: [
+          {
+            '@type': 'OpeningHoursSpecification',
+            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+            opens: '09:00',
+            closes: '17:30',
+          },
+        ],
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: settings.rating,
+          bestRating: '5',
+          reviewCount: settings.review_count,
+        },
+      })}
+    />
+  </head>
+  <body>
+    <span class="page-wipe" aria-hidden="true"></span>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // ---- red page-transition wipe -------------------------------------
+      // The View Transition API drives the crossfade; this paints a red sweep
+      // over the top of it so navigation reads as a deliberate brand moment.
+      document.addEventListener('astro:before-preparation', () => {
+        document.documentElement.classList.add('is-navigating');
+      });
+      document.addEventListener('astro:after-swap', () => {
+        window.scrollTo(0, 0);
+      });
+      document.addEventListener('astro:page-load', () => {
+        const html = document.documentElement;
+        html.classList.remove('is-navigating');
+        html.classList.add('has-landed');
+        window.setTimeout(() => html.classList.remove('has-landed'), 620);
+      });
+
+      // ---- card tilt -----------------------------------------------------
+      const wireTilt = () => {
+        const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+        const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!fine || still) return;
+
+        const MAX_Y = 7; // deg, left/right
+        const MAX_X = 5; // deg, up/down
+
+        document.querySelectorAll<HTMLElement>('.tilt').forEach((card) => {
+          if (card.dataset.tilted) return;
+          card.dataset.tilted = '1';
+          let frame = 0;
+
+          card.addEventListener('pointermove', (e) => {
+            if (frame) return;
+            frame = requestAnimationFrame(() => {
+              frame = 0;
+              const r = card.getBoundingClientRect();
+              const px = (e.clientX - r.left) / r.width;
+              const py = (e.clientY - r.top) / r.height;
+              card.classList.add('is-tilting');
+              card.style.setProperty('--ry', `${(px - 0.5) * 2 * MAX_Y}deg`);
+              card.style.setProperty('--rx', `${(0.5 - py) * 2 * MAX_X}deg`);
+              card.style.setProperty('--mx', `${px * 100}%`);
+              card.style.setProperty('--my', `${py * 100}%`);
+            });
+          });
+
+          card.addEventListener('pointerleave', () => {
+            card.classList.remove('is-tilting');
+            card.style.setProperty('--ry', '0deg');
+            card.style.setProperty('--rx', '0deg');
+            card.style.setProperty('--mx', '50%');
+            card.style.setProperty('--my', '50%');
+          });
+        });
+      };
+
+      // ---- reveal on scroll ---------------------------------------------
+      const wireReveal = () => {
+        const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const targets = document.querySelectorAll<HTMLElement>('.section, .stats-band, .cta-band, .testimonials');
+        if (still) {
+          targets.forEach((t) => t.classList.add('is-in'));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            });
+          },
+          // Positive bottom margin fires the reveal before the section reaches
+          // the viewport, so a fast scroll never lands on a blank panel.
+          { rootMargin: '0px 0px 22% 0px', threshold: 0 }
+        );
+        targets.forEach((t) => io.observe(t));
+      };
+
+      const boot = () => {
+        wireTilt();
+        wireReveal();
+      };
+      boot();
+      document.addEventListener('astro:page-load', boot);
+    </script>
+  </body>
+</html>
