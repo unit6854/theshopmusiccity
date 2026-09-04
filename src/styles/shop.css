@@ -642,6 +642,9 @@ html.has-landed .page-wipe {
   -webkit-overflow-scrolling: touch;
   padding: 4px clamp(16px, 4vw, 40px) 22px;
   scrollbar-width: none;
+  /* stops a horizontal swipe here from chaining out to the browser's
+     back/forward gesture on touch devices */
+  overscroll-behavior-x: contain;
 }
 .fav-rail::-webkit-scrollbar { height: 0; }
 .fav-track { display: flex; gap: 16px; }
@@ -1030,8 +1033,10 @@ html.has-landed .page-wipe {
   align-items: center;
   gap: clamp(6px, 2vw, 22px);
   padding: clamp(16px, 4vw, 46px);
-  background: rgba(4, 4, 6, 0.94);
-  backdrop-filter: blur(6px);
+  /* Near-solid. At 0.94 the gallery read through sharply behind the photo and
+     looked like a rendering fault rather than a viewer. */
+  background: rgba(5, 5, 7, 0.985);
+  backdrop-filter: blur(8px);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
@@ -1102,12 +1107,23 @@ html.has-landed .page-wipe {
 }
 
 @media (max-width: 640px) {
-  .lightbox { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
-  .lightbox-stage { grid-row: 1; }
-  .lightbox-stage img { max-height: 66vh; }
-  .lightbox-nav { position: static; }
-  .lightbox-prev { grid-row: 2; justify-self: start; }
-  .lightbox-next { grid-row: 2; justify-self: end; }
+  /* One column, photo above the controls. Every child must be pinned to
+     column 1 - without that the two arrows cannot share row 2 and the browser
+     invents a second column, which squeezed the photo to ~288px and threw the
+     arrows into opposite corners. */
+  .lightbox {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 16px;
+    padding: 14px 14px 22px;
+    /* fully opaque: at 0.94 the gallery read straight through the viewer */
+    background: #050507;
+  }
+  .lightbox-stage { grid-column: 1; grid-row: 1; align-self: center; }
+  .lightbox-stage img { max-height: 62vh; width: 100%; object-fit: contain; }
+  .lightbox-nav { position: static; grid-column: 1; grid-row: 2; }
+  .lightbox-prev { justify-self: start; }
+  .lightbox-next { justify-self: end; }
 }
 
 /* ---------- services page ---------------------------------------------- */
@@ -1640,8 +1656,15 @@ html.has-landed .page-wipe {
 @media (max-width: 560px) {
   /* pills ran to three rows at 375px */
   .gallery-filters { gap: 7px; justify-content: flex-start; }
-  .filter-pill { padding: 8px 14px; font-size: 0.84rem; }
+  .filter-pill { padding: 10px 15px; font-size: 0.84rem; }
   .gallery-rule { margin: 18px 0 22px; }
+
+  /* Comfortable thumb targets. The footer links were 24px tall and the social
+     icons 32px, both well under a usable tap size. */
+  .footer-links a { padding: 9px 0; }
+  .socials a { width: 42px; height: 42px; }
+  .footer-contact a { display: inline-block; padding: 4px 0; }
+  .footer-legal a { padding: 8px 0; }
 
   .reach-lines span { font-size: 1.02rem; }
   .cta-text h2 { font-size: clamp(1.4rem, 6.6vw, 1.8rem); }
