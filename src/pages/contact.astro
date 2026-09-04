@@ -1,52 +1,87 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
+import Hex from '../components/Hex.astro';
+import HexBackdrop from '../components/HexBackdrop.astro';
 import QuoteForm from '../components/QuoteForm.astro';
 import FaqList from '../components/FaqList.astro';
 import contact from '../data/contact.json';
 import settings from '../data/settings.json';
+
+const cards = [
+  {
+    icon: 'pin-solid',
+    label: 'Visit',
+    lines: [settings.address_line1, settings.address_line2],
+    note: 'Round the back on Myatt Drive.',
+    action: { label: 'Get directions', href: settings.map_url, external: true },
+  },
+  {
+    icon: 'phone',
+    label: 'Call',
+    lines: [settings.phone],
+    note: 'Fastest way to reach the shop.',
+    action: { label: 'Call now', href: settings.phone_link, external: false },
+  },
+  {
+    icon: 'mail',
+    label: 'Email',
+    lines: [settings.email],
+    note: 'Send photos and we will quote it.',
+    action: { label: 'Send an email', href: `mailto:${settings.email}`, external: false },
+  },
+];
 ---
 
 <BaseLayout
   title="Contact | The Shop Music City"
   description={`Call ${settings.phone} or stop by 517 Myatt Drive, Suite A in Madison, TN. Window tint, wraps, PPF and detailing quotes.`}
 >
-  <section class="page-head">
+  <PageHead eyebrow="Contact" title={contact.title} intro={contact.intro} />
+
+  <!-- ============ REACH US ============ -->
+  <section class="section section--tight hex-page contact-reach">
+    <HexBackdrop />
     <div class="container">
-      <p class="eyebrow">Contact</p>
-      <h1>{contact.title}</h1>
-      <p>{contact.intro}</p>
+      <ul class="reach-grid">
+        {
+          cards.map((c) => (
+            <li class="reach-card">
+              <span class="reach-hex"><Hex icon={c.icon} size={22} /></span>
+              <h2>{c.label}</h2>
+              <div class="reach-lines">
+                {c.lines.map((l) => <span>{l}</span>)}
+              </div>
+              <p class="reach-note">{c.note}</p>
+              <a
+                class="reach-link"
+                href={c.action.href}
+                target={c.action.external ? '_blank' : undefined}
+                rel={c.action.external ? 'noopener' : undefined}
+              >
+                {c.action.label}
+                <Icon name="arrow-right" size={16} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
-  <section class="section">
+  <!-- ============ HOURS + PAYMENT ============ -->
+  <section class="section section--tight">
     <div class="container">
-      <div class="info-grid">
-        <article class="info-card">
-          <h3>Address</h3>
-          <address>
-            {settings.address_line1}<br />
-            {settings.address_line2}
-          </address>
-          <p style="margin-top:12px;">
-            <a href={settings.map_url} target="_blank" rel="noopener">Get directions →</a>
-          </p>
-        </article>
-
-        <article class="info-card">
-          <h3>Phone</h3>
-          <p><a href={settings.phone_link}>{settings.phone}</a></p>
-          <h3 style="margin-top:20px;">Email</h3>
-          <p><a href={`mailto:${settings.email}`}>{settings.email}</a></p>
-        </article>
-
-        <article class="info-card">
-          <h3>Hours</h3>
+      <div class="contact-split">
+        <article class="slab">
+          <p class="eyebrow">Opening Hours</p>
+          <h2>When we are in the bay.</h2>
           <table class="hours-table">
             <tbody>
               {
                 settings.hours.map((h) => (
-                  <tr>
+                  <tr class={h.time === 'Closed' ? 'is-closed' : undefined}>
                     <td>{h.days}</td>
                     <td>{h.time}</td>
                   </tr>
@@ -56,9 +91,12 @@ import settings from '../data/settings.json';
           </table>
         </article>
 
-        <article class="info-card">
-          <h3>Payment</h3>
-          <p>{settings.payment_methods}</p>
+        <article class="slab">
+          <p class="eyebrow">Payment</p>
+          <h2>However you want to pay.</h2>
+          <ul class="pay-list">
+            {settings.payment_methods.split(',').map((m) => <li>{m.trim()}</li>)}
+          </ul>
         </article>
       </div>
     </div>
@@ -66,14 +104,17 @@ import settings from '../data/settings.json';
 
   <div class="band-sep"></div>
 
-  <section class="section">
-    <div class="container" style="max-width:900px;">
+  <!-- ============ QUOTE FORM ============ -->
+  <section class="section hex-page contact-form-section">
+    <HexBackdrop />
+    <div class="container" style="max-width:920px;">
       <QuoteForm />
     </div>
   </section>
 
   <div class="band-sep"></div>
 
+  <!-- ============ FAQ ============ -->
   <section class="section">
     <div class="container" style="max-width:900px;">
       <div class="section-head">

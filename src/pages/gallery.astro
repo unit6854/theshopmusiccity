@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
 import HexBackdrop from '../components/HexBackdrop.astro';
 import CtaBand from '../components/CtaBand.astro';
@@ -24,13 +25,7 @@ const full = (src: string) => src.replace('/gallery/', '/gallery/full/');
   title="Gallery | The Shop Music City"
   description="Window tints, vinyl wraps, detailing and custom wheels from the bay at The Shop Music City in Madison, TN."
 >
-  <section class="page-head">
-    <div class="container">
-      <p class="eyebrow">Gallery</p>
-      <h1>{gallery.title}</h1>
-      <p>{gallery.intro}</p>
-    </div>
-  </section>
+  <PageHead eyebrow="Gallery" title={gallery.title} intro={gallery.intro} />
 
   <section class="section hex-page">
     <HexBackdrop />

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
 import ReviewCard from '../components/ReviewCard.astro';
 import CtaBand from '../components/CtaBand.astro';
@@ -12,20 +13,14 @@ import { reviews } from '../lib/content';
   title="Reviews | The Shop Music City"
   description="Five-star reviews for window tinting, vinyl wraps and detailing at The Shop Music City in Madison, TN."
 >
-  <section class="page-head">
-    <div class="container">
-      <p class="eyebrow">Reviews</p>
-      <h1>{contact.reviews_title}</h1>
-      <p>{contact.reviews_intro}</p>
-
-      <div class="stars" style="justify-content:center; margin-top:20px;" aria-label="5 star rating">
-        {[1, 2, 3, 4, 5].map(() => <Icon name="star" size={22} />)}
-      </div>
-      <p class="rating-note" style="text-align:center;">
-        {settings.rating} stars across {settings.review_count}+ Google reviews
-      </p>
+  <PageHead eyebrow="Reviews" title={contact.reviews_title} intro={contact.reviews_intro}>
+    <div class="page-head-rating">
+      <span class="stars" aria-label="5 star rating">
+        {[1, 2, 3, 4, 5].map(() => <Icon name="star" size={20} />)}
+      </span>
+      <span class="rating-note">{settings.rating} stars across {settings.review_count}+ Google reviews</span>
     </div>
-  </section>
+  </PageHead>
 
   <section class="section">
     <div class="container">

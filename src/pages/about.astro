@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
 import HexBackdrop from '../components/HexBackdrop.astro';
 import CtaBand from '../components/CtaBand.astro';
@@ -11,13 +12,7 @@ import settings from '../data/settings.json';
   title="About | The Shop Music City"
   description="Owner-operated in Madison, TN since 2019 — window tinting, vinyl wraps, paint protection and detailing across Middle Tennessee."
 >
-  <section class="page-head">
-    <div class="container">
-      <p class="eyebrow">About</p>
-      <h1>{about.title}</h1>
-      <p>{about.subtitle}</p>
-    </div>
-  </section>
+  <PageHead eyebrow="About" title={about.title} intro={about.subtitle} />
 
   <section class="section">
     <div class="container">

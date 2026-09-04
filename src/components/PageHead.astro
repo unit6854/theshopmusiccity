@@ -1,0 +1,23 @@
+---
+// Title plate shared by every page except the home hero. The red hex-wall
+// photo sits behind, the copy runs left against its dark side.
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro?: string;
+}
+const { eyebrow, title, intro } = Astro.props;
+---
+
+<section class="page-head">
+  <span class="page-head-bg" aria-hidden="true">
+    <img src="/images/title-plate.webp" alt="" width="1774" height="887" fetchpriority="high" />
+  </span>
+
+  <div class="container">
+    <p class="eyebrow">{eyebrow}</p>
+    <h1>{title}</h1>
+    {intro && <p>{intro}</p>}
+    <slot />
+  </div>
+</section>

@@ -102,13 +102,13 @@ const services = servicesData.services.slice(0, 8);
         <div>
           <p class="eyebrow">{home.favorites_eyebrow}</p>
           <h2>{home.favorites_heading}</h2>
+          <p class="section-note section-note--wide">{home.favorites_note}</p>
         </div>
         <a class="btn btn--sm" href="/gallery">
           {home.favorites_button_label}
           <span class="btn-arrow"><Icon name="chevron" size={18} /></span>
         </a>
       </div>
-      <p class="section-note section-note--wide">{home.favorites_note}</p>
     </div>
 
     <div class="fav-rail" data-rail>
@@ -131,7 +131,8 @@ const services = servicesData.services.slice(0, 8);
   <div class="band-sep"></div>
 
   <!-- ================= VISION ================= -->
-  <section class="section vision">
+  <section class="section vision hex-page">
+    <HexBackdrop />
     <div class="container">
       <div class="vision-grid">
         <div class="vision-copy">

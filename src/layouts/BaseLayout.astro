@@ -42,7 +42,9 @@ const ogImage = new URL('/og.png', Astro.site ?? SITE);
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="theme-color" content="#e2102f" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/favicon-512.png" sizes="512x512" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -112,6 +114,94 @@ const ogImage = new URL('/og.png', Astro.site ?? SITE);
         html.classList.add('has-landed');
         window.setTimeout(() => html.classList.remove('has-landed'), 620);
       });
+
+      // ---- heavy momentum scrolling --------------------------------------
+      // The wheel feeds a virtual target and the page eases toward it, so
+      // scrolling carries weight and glides to a stop. Touch devices keep
+      // their native inertia; the wheel is the only input taken over.
+      // Bound once - window survives view transitions.
+      (() => {
+        const coarse = window.matchMedia('(pointer: coarse)').matches;
+        const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (coarse || still) return;
+
+        const EASE = 0.062; // lower = heavier glide
+        const PUSH = 1.15; // wheel throw multiplier
+
+        // our own rAF loop does the easing, so CSS smoothing has to stand down
+        document.documentElement.style.scrollBehavior = 'auto';
+
+        let target = window.scrollY;
+        let frame = 0;
+
+        const maxScroll = () =>
+          Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+
+        const run = () => {
+          const gap = target - window.scrollY;
+          if (Math.abs(gap) < 0.5) {
+            window.scrollTo(0, target);
+            frame = 0;
+            return;
+          }
+          window.scrollTo(0, window.scrollY + gap * EASE);
+          frame = requestAnimationFrame(run);
+        };
+
+        const start = () => {
+          if (!frame) frame = requestAnimationFrame(run);
+        };
+
+        window.addEventListener(
+          'wheel',
+          (e) => {
+            if (e.ctrlKey) return; // pinch zoom
+            // the lightbox, the favourites rail, textareas and any other inner
+            // scroller keep their own wheel
+            let node = e.target as HTMLElement | null;
+            while (node && node !== document.body) {
+              const style = getComputedStyle(node);
+              if (
+                /(auto|scroll)/.test(style.overflowY + style.overflowX) &&
+                (node.scrollHeight > node.clientHeight + 1 ||
+                  node.scrollWidth > node.clientWidth + 1)
+              ) {
+                return;
+              }
+              node = node.parentElement;
+            }
+            if (document.body.classList.contains('nav-locked')) return;
+
+            e.preventDefault();
+
+            // normalise line- and page-based wheels to pixels
+            const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
+            target = Math.min(maxScroll(), Math.max(0, target + e.deltaY * unit * PUSH));
+            start();
+          },
+          { passive: false }
+        );
+
+        // anything that moves the page another way resets the target
+        window.addEventListener(
+          'scroll',
+          () => {
+            if (!frame) target = window.scrollY;
+          },
+          { passive: true }
+        );
+        window.addEventListener('resize', () => {
+          target = Math.min(maxScroll(), window.scrollY);
+        });
+        // a page swap resets the scroll position, so reset the glide target too
+        document.addEventListener('astro:after-swap', () => {
+          target = 0;
+          if (frame) {
+            cancelAnimationFrame(frame);
+            frame = 0;
+          }
+        });
+      })();
 
       // ---- card tilt -----------------------------------------------------
       const wireTilt = () => {

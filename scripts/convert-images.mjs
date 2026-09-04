@@ -32,7 +32,11 @@ const large = [
   ['Working Justin.jpg', 'owner-at-work.webp', 1600, QHI],
   ['Truck red.jpg', 'truck-red.webp', 1920, QHI],
   ['the shop background.png', 'hex-wall.webp', 1400, Q],
-  ['logo-dark.png', 'logo.webp', 900, { quality: 95, effort: 6 }],
+  // Flat white lockup with real alpha - reads on any dark panel.
+  ['The Shop logo.png', 'logo.webp', 900, { quality: 95, effort: 6 }],
+  // Red hex-wall plate behind every page title. Car sits right, so the copy
+  // gets the dark left half.
+  ['Title area.png', 'title-plate.webp', 1920, QHI],
 ];
 
 // Home "about" block. The source is square but the block is landscape, so the
@@ -143,10 +147,17 @@ for (const [from, to, maxW, opts] of large) {
   console.log('image  ' + HERO_SRC.padEnd(26) + ' -> hero-bg.webp                  ' + wide.width + 'x' + wide.height + '  ' + kb(wide.size));
 
   // Narrow screens still need a taller crop or the band gets too short to
-  // hold the headline; biased right so the car stays in frame.
+  // hold the headline. A plain 'right' crop lands on the banner and toolbox at
+  // the edge of the frame, so the window is placed explicitly around the car,
+  // which sits centre-right in the source.
   const [, to, w, h] = heroMobile;
+  const meta = await sharp(src).metadata();
+  const cropW = Math.round(meta.height * (w / h));
+  const carCentre = Math.round(meta.width * 0.66);
+  const left = Math.min(meta.width - cropW, Math.max(0, carCentre - Math.round(cropW / 2)));
   const i = await sharp(src)
-    .resize(w, h, { fit: 'cover', position: 'right' })
+    .extract({ left, top: 0, width: cropW, height: meta.height })
+    .resize(w, h, { fit: 'cover' })
     .webp(QHI)
     .toFile(path.join(OUT, to));
   console.log('image  ' + HERO_SRC.padEnd(26) + ' -> ' + to.padEnd(30) + i.width + 'x' + i.height + '  ' + kb(i.size));
@@ -210,4 +221,78 @@ for (const [from, to] of favs) {
     .webp(Q)
     .toFile(path.join(OUT, to));
   console.log('fav    ' + from.padEnd(26) + ' -> ' + to.padEnd(30) + i.width + 'x' + i.height + '  ' + kb(i.size));
+}
+
+// ---- favicon + OG ------------------------------------------------------
+// Favicon crops to the script "S" - the full lockup is far too wide to read
+// at 32px, but the swash is distinctive on its own.
+{
+  const src = path.join(SRC, 'The Shop logo.png');
+  const m = await sharp(src).metadata();
+  // Window sits on the S swash only: the full lockup is ~1.8:1 and the
+  // "ALL THINGS CUSTOM" strip runs along the bottom, so a naive square crop
+  // slices through both the wordmark and that text.
+  const glyph = await sharp(src)
+    .extract({
+      left: Math.round(m.width * 0.01),
+      top: Math.round(m.height * 0.01),
+      width: Math.round(m.width * 0.335),
+      height: Math.round(m.height * 0.78),
+    })
+    .trim({ threshold: 1 })
+    .resize(400, 400, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .toBuffer();
+
+  for (const size of [512, 180, 32]) {
+    const pad = Math.round(size * 0.1);
+    const out = size === 512 ? 'favicon-512.png' : size === 180 ? 'apple-touch-icon.png' : 'favicon-32.png';
+    await sharp({
+      create: { width: size, height: size, channels: 4, background: { r: 8, g: 8, b: 10, alpha: 1 } },
+    })
+      .composite([
+        { input: await sharp(glyph).resize(size - pad * 2, size - pad * 2, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } }).toBuffer(), left: pad, top: pad },
+      ])
+      .png()
+      .toFile(path.resolve('./public', out));
+    console.log('icon   The Shop logo.png          -> ' + out);
+  }
+}
+
+// Open Graph card built from the hero currently in use.
+{
+  const W = 1200, H = 630;
+  const bg = await sharp(path.join(SRC, HERO_SRC))
+    .resize(W, H, { fit: 'cover', position: 'right' })
+    .modulate({ brightness: 0.92 })
+    .toBuffer();
+
+  const scrim = Buffer.from(
+    '<svg width="' + W + '" height="' + H + '"><defs><linearGradient id="g" x1="0" x2="1">' +
+    '<stop offset="0%" stop-color="#050507" stop-opacity="0.96"/>' +
+    '<stop offset="46%" stop-color="#050507" stop-opacity="0.82"/>' +
+    '<stop offset="82%" stop-color="#050507" stop-opacity="0.18"/>' +
+    '</linearGradient></defs>' +
+    '<rect width="' + W + '" height="' + H + '" fill="url(#g)"/>' +
+    '<rect y="' + (H - 7) + '" width="' + W + '" height="7" fill="#e2102f"/></svg>'
+  );
+
+  const logo = await sharp(path.join(SRC, 'The Shop logo.png')).resize({ width: 430 }).toBuffer();
+
+  const text = Buffer.from(
+    '<svg width="' + W + '" height="' + H + '" xmlns="http://www.w3.org/2000/svg"><style>' +
+    ".k{font-family:'Saira Condensed','Arial Narrow',sans-serif;fill:#fff;font-weight:800}" +
+    ".s{font-family:'Barlow',system-ui,sans-serif;fill:#c9ccd4;font-size:26px}" +
+    ".e{font-family:'Saira Condensed','Arial Narrow',sans-serif;fill:#ff3d5c;font-size:21px;font-weight:700;letter-spacing:4px}" +
+    '</style>' +
+    '<text class="e" x="62" y="366">MADISON, TN &#183; SINCE 2019</text>' +
+    '<text class="k" x="62" y="432" font-size="62">WINDOW TINT &#183; WRAPS</text>' +
+    '<text class="k" x="62" y="494" font-size="62">DETAILING &#183; PPF</text>' +
+    '<text class="s" x="62" y="542">Your friend in custom automotive.</text></svg>'
+  );
+
+  const i = await sharp(bg)
+    .composite([{ input: scrim }, { input: logo, left: 58, top: 88 }, { input: text }])
+    .png({ compressionLevel: 9, quality: 82, palette: true })
+    .toFile(path.resolve('./public/og.png'));
+  console.log('og     ' + HERO_SRC.padEnd(26) + ' -> og.png                        1200x630  ' + kb(i.size));
 }

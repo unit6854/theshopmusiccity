@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
 import HexBackdrop from '../components/HexBackdrop.astro';
 import CtaBand from '../components/CtaBand.astro';
@@ -13,13 +14,7 @@ const slug = (s: string) =>
   title="Services | The Shop Music City"
   description="Vinyl wraps, window tint, paint protection, ceramic coating, custom builds, detailing and fleet graphics in Madison, TN."
 >
-  <section class="page-head">
-    <div class="container">
-      <p class="eyebrow">Services</p>
-      <h1>{data.title}</h1>
-      <p>{data.intro}</p>
-    </div>
-  </section>
+  <PageHead eyebrow="Services" title={data.title} intro={data.intro} />
 
   <section class="section">
     <div class="container">
