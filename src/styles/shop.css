@@ -1576,52 +1576,71 @@ html.has-landed .page-wipe {
   .masonry { columns: 2 150px; column-gap: 10px; }
   .masonry-item { margin-bottom: 10px; }
 
-  /* On phones the hero splits in two: the photo occupies a fixed band at the
-     top with the headline sitting over its lower edge, and the copy, button
-     and chips drop onto solid black beneath the car. */
+  /* On phones the hero fills the screen below the header, so one scroll
+     gesture clears it and lands on the next section. The headline sits 40px
+     under the nav bar; the copy, button and chips are held against the
+     bottom as one group. */
   .hero {
     aspect-ratio: auto;
-    min-height: auto;
+    min-height: 0;
+    height: calc(100dvh - var(--header-h));
     padding: 0;
-    display: block;
+    display: flex;
+    align-items: stretch;
   }
-  .hero > .container { width: 100%; position: relative; z-index: 2; }
-
-  .hero-bg { height: var(--hero-photo, 340px); bottom: auto; }
-  .hero::after { height: var(--hero-photo, 340px); bottom: auto; }
-
-  .hero-lede {
-    min-height: var(--hero-photo, 340px);
+  .hero > .container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+    display: flex;
+  }
+  .hero-inner {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    padding-bottom: 20px;
+    width: 100%;
+    height: 100%;
   }
+
+  /* photo covers the whole hero again */
+  .hero-bg,
+  .hero::after { height: auto; inset: 0; }
+
+  /* the headline itself lands 40px under the nav bar; the eyebrow tucks into
+     the space above it */
+  .hero-lede { padding-top: 12px; }
+  .hero-lede h1 { margin-top: 10px; }
   .hero-rest {
-    padding: 22px 0 30px;
+    margin-top: auto;
+    padding-bottom: clamp(22px, 5vw, 34px);
   }
   .hero-bg img { object-position: 62% 42%; }
   /* Two layers: a vertical wash that anchors the top and bottom edges, plus a
      left-weighted wash holding a dark field under the copy. Kept lighter on
      the right than the desktop scrim so the car still reads at this size. */
+  /* The phone crop is already a dark scene and its lower third fades to near
+     black in the asset itself, so the overlay is now only a light touch: a
+     little at the very top behind the headline and a little at the very
+     bottom. The middle of the photo is left alone. */
   .hero::after {
     background:
+      /* the headline occupies roughly the top 5-27%, and its red second line
+         crosses the lit hex wall, so the wash is held through that band and
+         then released completely across the car */
       linear-gradient(
         180deg,
-        rgba(5, 5, 7, 0.82) 0%,
-        rgba(5, 5, 7, 0.44) 30%,
-        rgba(5, 5, 7, 0.24) 62%,
-        rgba(5, 5, 7, 0.86) 86%,
-        rgba(5, 5, 7, 0.99) 100%
+        rgba(5, 5, 7, 0.62) 0%,
+        rgba(5, 5, 7, 0.46) 18%,
+        rgba(5, 5, 7, 0.14) 32%,
+        rgba(5, 5, 7, 0) 46%,
+        rgba(5, 5, 7, 0) 70%,
+        rgba(5, 5, 7, 0.26) 100%
       ),
-      /* holds a dark field under the headline, which runs almost the full
-         width at this size, then clears fast so the wheel and headlight read */
       linear-gradient(
         90deg,
-        rgba(5, 5, 7, 0.93) 0%,
-        rgba(5, 5, 7, 0.89) 44%,
-        rgba(5, 5, 7, 0.6) 68%,
-        rgba(5, 5, 7, 0.1) 93%
+        rgba(5, 5, 7, 0.34) 0%,
+        rgba(5, 5, 7, 0.14) 48%,
+        rgba(5, 5, 7, 0) 80%
       );
   }
   .hero-inner { max-width: none; }
@@ -1634,10 +1653,11 @@ html.has-landed .page-wipe {
   .hero-chips { gap: 9px 20px; margin-top: 20px; }
   .hero-chips li { font-size: 0.82rem; }
 
-  /* roughly half the previous footprint - it was a full-width slab */
+  /* roughly half the previous footprint - it was a full-width slab, and it
+     sits tight under the paragraph rather than floating away from it */
   .hero .btn-flare {
     width: auto;
-    margin-top: 20px;
+    margin-top: 12px;
     padding: 11px 20px;
     font-size: 0.82rem;
     gap: 9px;

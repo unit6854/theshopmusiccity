@@ -51,7 +51,7 @@ const aboutShot = ['big truck.jpg', 'big-truck.webp', 1440, 1030];
 // Narrow-screen hero. The source is 1870x841, so a tall crop would upscale
 // badly - a near-square frame keeps it close to native pixels while still
 // holding the car and the lit hex wall behind it.
-const heroMobile = ['Hero_Final.png', 'hero-bg-mobile.webp', 1000, 1040];
+const heroMobile = ['Hero_final 2.png', 'hero-bg-mobile.webp', 800, 1578];
 
 // Service cards. Each entry is a slug plus the owner's thumbs for that
 // service, listed best-first: the filename numbers are his ranking (no number
@@ -150,153 +150,40 @@ for (const [from, to, maxW, opts] of large) {
     .toFile(path.join(OUT, 'hero-bg.webp'));
   console.log('image  ' + HERO_SRC.padEnd(26) + ' -> hero-bg.webp                  ' + wide.width + 'x' + wide.height + '  ' + kb(wide.size));
 
-  // Narrow screens still need a taller crop or the band gets too short to
-  // hold the headline. A plain 'right' crop lands on the banner and toolbox at
-  // the edge of the frame, so the window is placed explicitly around the car,
-  // which sits centre-right in the source.
-  const [, to, w, h] = heroMobile;
+  // Phone hero: a real crop of the scene at roughly 0.70 aspect, which frames
+  // the whole car with the lit hex wall behind it and keeps the dark wall on
+  // the left where the headline sits. The phone box is taller than that, so
+  // rather than crop tighter (which zooms into the bumper) the floor is
+  // carried down as a gradient into shadow - the copy sits over that band.
+  const [, to, MW, MH] = heroMobile;
+  const ASP = 0.7;
   const meta = await sharp(src).metadata();
-  const cropW = Math.round(meta.height * (w / h));
-  const carCentre = Math.round(meta.width * 0.66);
-  const left = Math.min(meta.width - cropW, Math.max(0, carCentre - Math.round(cropW / 2)));
-  const i = await sharp(src)
-    .extract({ left, top: 0, width: cropW, height: meta.height })
-    .resize(w, h, { fit: 'cover' })
-    .webp(QHI)
-    .toFile(path.join(OUT, to));
-  console.log('image  ' + HERO_SRC.padEnd(26) + ' -> ' + to.padEnd(30) + i.width + 'x' + i.height + '  ' + kb(i.size));
-}
+  const winW = Math.round(meta.height * ASP);
+  const left = Math.min(meta.width - winW, 820);
+  const cropH = Math.round(MW / ASP);
 
-{
-  const [from, to, w, h] = aboutShot;
-  const i = await sharp(path.join(SRC, from))
-    .resize(w, h, { fit: 'cover', position: 'bottom' })
-    .webp(QHI)
-    .toFile(path.join(OUT, to));
-  console.log('image  ' + from.padEnd(26) + ' -> ' + to.padEnd(30) + i.width + 'x' + i.height + '  ' + kb(i.size));
-}
-
-// Emits svc-<slug>-0.webp, -1.webp ... in the owner's ranked order, and prints
-// the frame list so it can be pasted into services.json.
-const cardFrames = {};
-for (const [slug, sources] of cards) {
-  cardFrames[slug] = [];
-  for (let n = 0; n < sources.length; n++) {
-    const to = 'svc-' + slug + '-' + n + '.webp';
-    const i = await sharp(path.join(SVC, sources[n]))
-      .resize(CARD_W, CARD_H, { fit: 'cover', position: 'centre' })
-      .webp(Q)
-      .toFile(path.join(OUT, to));
-    cardFrames[slug].push('/images/' + to);
-    console.log('card   ' + sources[n].padEnd(26) + ' -> ' + to.padEnd(30) + i.width + 'x' + i.height + '  ' + kb(i.size));
-  }
-}
-console.log('\ncard frame sets:');
-for (const [slug, list] of Object.entries(cardFrames)) {
-  console.log('  ' + slug.padEnd(18) + list.length + ' frame(s)');
-}
-
-mkdirSync(path.join(GOUT, 'full'), { recursive: true });
-
-for (const [prefix, cat, slug] of gallery) {
-  const to = cat + '--' + slug + '.webp';
-  const src = findGal(prefix);
-
-  const i = await sharp(src)
-    .resize({ width: GAL_W, withoutEnlargement: true })
-    .webp(Q)
-    .toFile(path.join(GOUT, to));
-
-  // Larger copy for the lightbox - only fetched when a photo is opened.
-  const f = await sharp(src)
-    .resize({ width: 1200, withoutEnlargement: true })
-    .webp(Q)
-    .toFile(path.join(GOUT, 'full', to));
-
-  console.log(
-    'gal    #' + prefix.padEnd(25) + ' -> ' + to.padEnd(38) +
-    i.width + 'x' + i.height + ' ' + kb(i.size) + '  (full ' + f.width + 'x' + f.height + ' ' + kb(f.size) + ')'
-  );
-}
-
-for (const [from, to] of favs) {
-  const i = await sharp(path.join(FAV, from))
-    .resize(760, 950, { fit: 'cover', position: 'centre' })
-    .webp(Q)
-    .toFile(path.join(OUT, to));
-  console.log('fav    ' + from.padEnd(26) + ' -> ' + to.padEnd(30) + i.width + 'x' + i.height + '  ' + kb(i.size));
-}
-
-// ---- favicon + OG ------------------------------------------------------
-// Favicon crops to the script "S" - the full lockup is far too wide to read
-// at 32px, but the swash is distinctive on its own.
-{
-  const src = path.join(SRC, 'The Shop logo.png');
-  const m = await sharp(src).metadata();
-  // Window sits on the S swash only: the full lockup is ~1.8:1 and the
-  // "ALL THINGS CUSTOM" strip runs along the bottom, so a naive square crop
-  // slices through both the wordmark and that text.
-  const glyph = await sharp(src)
-    .extract({
-      left: Math.round(m.width * 0.01),
-      top: Math.round(m.height * 0.01),
-      width: Math.round(m.width * 0.335),
-      height: Math.round(m.height * 0.78),
-    })
-    .trim({ threshold: 1 })
-    .resize(400, 400, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  const crop = await sharp(src)
+    .extract({ left, top: 0, width: winW, height: meta.height })
+    .resize(MW, cropH, { fit: 'cover' })
+    .png()
     .toBuffer();
 
-  for (const size of [512, 180, 32]) {
-    const pad = Math.round(size * 0.1);
-    const out = size === 512 ? 'favicon-512.png' : size === 180 ? 'apple-touch-icon.png' : 'favicon-32.png';
-    await sharp({
-      create: { width: size, height: size, channels: 4, background: { r: 8, g: 8, b: 10, alpha: 1 } },
-    })
-      .composite([
-        { input: await sharp(glyph).resize(size - pad * 2, size - pad * 2, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } }).toBuffer(), left: pad, top: pad },
-      ])
-      .png()
-      .toFile(path.resolve('./public', out));
-    console.log('icon   The Shop logo.png          -> ' + out);
-  }
-}
-
-// Open Graph card built from the hero currently in use.
-{
-  const W = 1200, H = 630;
-  const bg = await sharp(path.join(SRC, HERO_SRC))
-    .resize(W, H, { fit: 'cover', position: 'right' })
-    .modulate({ brightness: 0.92 })
-    .toBuffer();
-
-  const scrim = Buffer.from(
-    '<svg width="' + W + '" height="' + H + '"><defs><linearGradient id="g" x1="0" x2="1">' +
-    '<stop offset="0%" stop-color="#050507" stop-opacity="0.96"/>' +
-    '<stop offset="46%" stop-color="#050507" stop-opacity="0.82"/>' +
-    '<stop offset="82%" stop-color="#050507" stop-opacity="0.18"/>' +
-    '</linearGradient></defs>' +
-    '<rect width="' + W + '" height="' + H + '" fill="url(#g)"/>' +
-    '<rect y="' + (H - 7) + '" width="' + W + '" height="7" fill="#e2102f"/></svg>'
+  // average the floor so the fade starts from the concrete's own tone
+  const floorStats = await sharp(crop).extract({ left: 0, top: cropH - 40, width: MW, height: 40 }).stats();
+  const [fr, fg, fb] = floorStats.channels.map((ch) => Math.round(ch.mean));
+  const extH = MH - cropH;
+  const fade = Buffer.from(
+    '<svg width="' + MW + '" height="' + extH + '"><defs>' +
+      '<linearGradient id="g" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="rgb(' + fr + ',' + fg + ',' + fb + ')"/>' +
+      '<stop offset="55%" stop-color="#0d0d10"/>' +
+      '<stop offset="100%" stop-color="#08080a"/>' +
+      '</linearGradient></defs>' +
+      '<rect width="' + MW + '" height="' + extH + '" fill="url(#g)"/></svg>'
   );
 
-  const logo = await sharp(path.join(SRC, 'The Shop logo.png')).resize({ width: 430 }).toBuffer();
+  const i = await sharp({ create: { width: MW, height: MH, channels: 3, background: '#08080a' } })
+    .composite([{ input: crop, left: 0, top: 0 }, { input: fade, left: 0, top: cropH }])
+    .webp(QHI)
+    .toFile(path.join(OUT, to));
 
-  const text = Buffer.from(
-    '<svg width="' + W + '" height="' + H + '" xmlns="http://www.w3.org/2000/svg"><style>' +
-    ".k{font-family:'Saira Condensed','Arial Narrow',sans-serif;fill:#fff;font-weight:800}" +
-    ".s{font-family:'Barlow',system-ui,sans-serif;fill:#c9ccd4;font-size:26px}" +
-    ".e{font-family:'Saira Condensed','Arial Narrow',sans-serif;fill:#ff3d5c;font-size:21px;font-weight:700;letter-spacing:4px}" +
-    '</style>' +
-    '<text class="e" x="62" y="366">MADISON, TN &#183; SINCE 2019</text>' +
-    '<text class="k" x="62" y="432" font-size="62">WINDOW TINT &#183; WRAPS</text>' +
-    '<text class="k" x="62" y="494" font-size="62">DETAILING &#183; PPF</text>' +
-    '<text class="s" x="62" y="542">Your friend in custom automotive.</text></svg>'
-  );
-
-  const i = await sharp(bg)
-    .composite([{ input: scrim }, { input: logo, left: 58, top: 88 }, { input: text }])
-    .png({ compressionLevel: 9, quality: 82, palette: true })
-    .toFile(path.resolve('./public/og.png'));
-  console.log('og     ' + HERO_SRC.padEnd(26) + ' -> og.png                        1200x630  ' + kb(i.size));
-}
