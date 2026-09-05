@@ -982,6 +982,12 @@ html.has-landed .page-wipe {
   cursor: zoom-in;
   transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
 }
+/* Same trap as the lightbox below: `.masonry-item { display: block }` is an
+   author rule, and author rules outrank the UA's `[hidden] { display: none }`
+   whatever the specificity. Without this the filter set the hidden attribute on
+   every off-category photo and all 33 stayed on screen. */
+.masonry-item[hidden] { display: none; }
+
 .masonry-item img {
   width: 100%;
   height: auto;
@@ -1580,6 +1586,10 @@ html.has-landed .page-wipe {
      gesture clears it and lands on the next section. The headline sits 40px
      under the nav bar; the copy, button and chips are held against the
      bottom as one group. */
+  /* Fills the screen below the nav, so one scroll gesture clears the hero.
+     Height is tied to the viewport, never to the photo's ratio - deriving it
+     from the asset made the hero 618px tall at 375px wide and 1078px at 655px,
+     which pushed the copy clean off the bottom of the screen. */
   .hero {
     aspect-ratio: auto;
     min-height: 0;
@@ -1610,37 +1620,85 @@ html.has-landed .page-wipe {
      the space above it */
   .hero-lede { padding-top: 12px; }
   .hero-lede h1 { margin-top: 10px; }
+  /* The copy group rides directly under the headline rather than being pushed
+     to the foot of the hero, with a clear gap between the two. */
   .hero-rest {
-    margin-top: auto;
-    padding-bottom: clamp(22px, 5vw, 34px);
+    position: relative;
+    margin-top: clamp(20px, 5.5vw, 30px);
+    padding-bottom: 0;
   }
-  .hero-bg img { object-position: 62% 42%; }
-  /* Two layers: a vertical wash that anchors the top and bottom edges, plus a
-     left-weighted wash holding a dark field under the copy. Kept lighter on
-     the right than the desktop scrim so the car still reads at this size. */
-  /* The phone crop is already a dark scene and its lower third fades to near
-     black in the asset itself, so the overlay is now only a light touch: a
-     little at the very top behind the headline and a little at the very
-     bottom. The middle of the photo is left alone. */
+  /* The photo is laid in at full width and its natural height rather than
+     being stretched to cover the box, so all 552 columns are kept - nothing is
+     cropped or zoomed - and it can then be slid vertically.
+
+     --hero-lift is that slide. Top-anchored the car sat low, overlapping the
+     paragraph; lifting the photo puts it midway between the headline above and
+     the copy below. It is a vw value so the shift tracks the photo's own
+     rendered scale, clamped so it cannot run away on a wide window. This is
+     the one number to change if the car wants to sit higher or lower.
+
+     The photo's foot has already faded to the page black, so wherever it ends
+     short of the hero's bottom edge the section's own background continues it
+     with no visible join. */
+  .hero { --hero-lift: clamp(48px, 15vw, 110px); }
+  .hero-bg { overflow: hidden; }
+  .hero-bg img {
+    position: absolute;
+    left: 0;
+    top: calc(-1 * var(--hero-lift));
+    width: 100%;
+    height: auto;
+  }
+
+  /* Black behind the text only, out of the top-left corner, gone before it
+     reaches the car. Two layers, and neither can show a line:
+
+     1. A band down the top of the frame. This is the one that actually holds
+        the copy, so it keeps its strength right across the width - the last
+        words of the paragraph cross the lit hex wall, and a single
+        corner-anchored ellipse fell off with distance from the corner and left
+        them at 1.55 contrast. It runs at full weight to 52vw - past the last
+        line of the paragraph - then eases away to nothing by 80vw. The car's bright work - headlights, hood
+        highlights, the red wheel - all begins below 80vw, so none of it is
+        touched. What little the tail still covers at the roofline is pure
+        black bodywork, where black over black shows nothing.
+     2. A soft ellipse in the corner itself, adding the top-left weight, dying
+        out well above the car.
+
+     Both ramps follow a smoothstep curve rather than a straight line, so the
+     alpha flattens to zero instead of arriving at transparent with a slope -
+     that slope is what the eye reads as a ring. On top of that the layer is
+     blurred and grown 90px past the hero on every side, so the blur's own soft
+     edge is cropped off outside the frame; the stops carry the same 90px
+     offset to keep them on the hero's real coordinates. */
   .hero::after {
+    inset: -90px;
+    filter: blur(30px);
     background:
-      /* the headline occupies roughly the top 5-27%, and its red second line
-         crosses the lit hex wall, so the wash is held through that band and
-         then released completely across the car */
-      linear-gradient(
-        180deg,
-        rgba(5, 5, 7, 0.62) 0%,
-        rgba(5, 5, 7, 0.46) 18%,
-        rgba(5, 5, 7, 0.14) 32%,
-        rgba(5, 5, 7, 0) 46%,
-        rgba(5, 5, 7, 0) 70%,
-        rgba(5, 5, 7, 0.26) 100%
+      radial-gradient(
+        78vw 52vw at 90px 90px,
+        rgba(0, 0, 0, 0.58) 0%,
+        rgba(0, 0, 0, 0.555) 13%,
+        rgba(0, 0, 0, 0.489) 25%,
+        rgba(0, 0, 0, 0.396) 38%,
+        rgba(0, 0, 0, 0.29) 50%,
+        rgba(0, 0, 0, 0.184) 63%,
+        rgba(0, 0, 0, 0.091) 75%,
+        rgba(0, 0, 0, 0.025) 88%,
+        rgba(0, 0, 0, 0) 100%
       ),
       linear-gradient(
-        90deg,
-        rgba(5, 5, 7, 0.34) 0%,
-        rgba(5, 5, 7, 0.14) 48%,
-        rgba(5, 5, 7, 0) 80%
+        180deg,
+        rgba(0, 0, 0, 0.72) 0,
+        rgba(0, 0, 0, 0.72) calc(90px + 52vw),
+        rgba(0, 0, 0, 0.689) calc(90px + 55.5vw),
+        rgba(0, 0, 0, 0.607) calc(90px + 59vw),
+        rgba(0, 0, 0, 0.492) calc(90px + 62.5vw),
+        rgba(0, 0, 0, 0.36) calc(90px + 66vw),
+        rgba(0, 0, 0, 0.228) calc(90px + 69.5vw),
+        rgba(0, 0, 0, 0.112) calc(90px + 73vw),
+        rgba(0, 0, 0, 0.031) calc(90px + 76.5vw),
+        rgba(0, 0, 0, 0) calc(90px + 80vw)
       );
   }
   .hero-inner { max-width: none; }
@@ -1650,8 +1708,10 @@ html.has-landed .page-wipe {
   .hero h1 { font-size: clamp(2.2rem, 11.2vw, 3.4rem); }
   .hero-lead { max-width: 34ch; margin-top: 0; }
   .hero-copy { max-width: 42ch; margin-top: 0; }
-  .hero-chips { gap: 9px 20px; margin-top: 20px; }
-  .hero-chips li { font-size: 0.82rem; }
+  /* Wraps / PPF / Tint / Custom Builds are cut on phones - the same ground is
+     covered by the services section directly below, and dropping them lets the
+     copy and the button sit as one tight group at the foot of the photo. */
+  .hero-chips { display: none; }
 
   /* roughly half the previous footprint - it was a full-width slab, and it
      sits tight under the paragraph rather than floating away from it */

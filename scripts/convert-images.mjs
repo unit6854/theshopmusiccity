@@ -48,10 +48,15 @@ const large = [
 // cut the wheels off the bottom, which is the whole point of the shot.
 const aboutShot = ['big truck.jpg', 'big-truck.webp', 1440, 1030];
 
-// Narrow-screen hero. The source is 1870x841, so a tall crop would upscale
-// badly - a near-square frame keeps it close to native pixels while still
-// holding the car and the lit hex wall behind it.
-const heroMobile = ['Hero_final 2.png', 'hero-bg-mobile.webp', 800, 1578];
+// Narrow-screen hero. Its own portrait shot (552x909), used as framed - no
+// crop, no upscale. Resizing past native would only add bytes, so it ships at
+// source size and the CSS covers the phone box from there.
+const heroMobile = ['mobile bg.png', 'hero-bg-mobile.webp'];
+
+// Aspect the phone hero canvas is padded out to. Narrower than any real phone
+// hero box (375x742 = 0.51, 414x826 = 0.50, 360x790 = 0.46), so object-fit:
+// cover always resolves by width and never crops the sides of the shot.
+const MOBILE_ASP = 0.47;
 
 // Service cards. Each entry is a slug plus the owner's thumbs for that
 // service, listed best-first: the filename numbers are his ranking (no number
@@ -141,49 +146,54 @@ for (const [from, to, maxW, opts] of large) {
 }
 
 {
-  const src = path.join(SRC, HERO_SRC);
-
   // Full frame, untouched aspect - the hero section matches this ratio.
-  const wide = await sharp(src)
+  const wide = await sharp(path.join(SRC, HERO_SRC))
     .resize({ width: 1920, withoutEnlargement: true })
     .webp(QHI)
     .toFile(path.join(OUT, 'hero-bg.webp'));
   console.log('image  ' + HERO_SRC.padEnd(26) + ' -> hero-bg.webp                  ' + wide.width + 'x' + wide.height + '  ' + kb(wide.size));
 
-  // Phone hero: a real crop of the scene at roughly 0.70 aspect, which frames
-  // the whole car with the lit hex wall behind it and keeps the dark wall on
-  // the left where the headline sits. The phone box is taller than that, so
-  // rather than crop tighter (which zooms into the bumper) the floor is
-  // carried down as a gradient into shadow - the copy sits over that band.
-  const [, to, MW, MH] = heroMobile;
-  const ASP = 0.7;
-  const meta = await sharp(src).metadata();
-  const winW = Math.round(meta.height * ASP);
-  const left = Math.min(meta.width - winW, 820);
-  const cropH = Math.round(MW / ASP);
+  // Phone hero. The shot is 552x909 (0.61) and a phone hero box is about 0.50,
+  // so cover against the raw file would eat roughly a fifth of the width off
+  // the sides. Giving the hero the photo's own aspect ratio instead is not an
+  // option either - that height is driven by viewport width, so it comes out
+  // far too short on a narrow phone and taller than the screen on a wide one.
+  //
+  // So the photo is left completely untouched and the canvas is extended
+  // BELOW it to MOBILE_ASP, narrower than any phone hero box. Cover then
+  // always resolves by width: all 552 columns of the original are on screen,
+  // nothing cropped, nothing zoomed. The extension is a gradient starting from
+  // the concrete's own average tone, so there is no seam at the join, running
+  // down into the page black - the copy, button and chips sit over it.
+  const [mFrom, mTo] = heroMobile;
+  const msrc = path.join(SRC, mFrom);
+  const mm = await sharp(msrc).metadata();
+  const MW = mm.width;
+  const MH = Math.round(MW / MOBILE_ASP);
+  const extH = MH - mm.height;
 
-  const crop = await sharp(src)
-    .extract({ left, top: 0, width: winW, height: meta.height })
-    .resize(MW, cropH, { fit: 'cover' })
-    .png()
-    .toBuffer();
+  const scene = await sharp(msrc).png().toBuffer();
+  const floor = await sharp(scene)
+    .extract({ left: 0, top: mm.height - 30, width: MW, height: 30 })
+    .stats();
+  const [fr, fg, fb] = floor.channels.slice(0, 3).map((ch) => Math.round(ch.mean));
 
-  // average the floor so the fade starts from the concrete's own tone
-  const floorStats = await sharp(crop).extract({ left: 0, top: cropH - 40, width: MW, height: 40 }).stats();
-  const [fr, fg, fb] = floorStats.channels.map((ch) => Math.round(ch.mean));
-  const extH = MH - cropH;
   const fade = Buffer.from(
     '<svg width="' + MW + '" height="' + extH + '"><defs>' +
       '<linearGradient id="g" x1="0" y1="0" x2="0" y2="1">' +
       '<stop offset="0%" stop-color="rgb(' + fr + ',' + fg + ',' + fb + ')"/>' +
-      '<stop offset="55%" stop-color="#0d0d10"/>' +
+      '<stop offset="50%" stop-color="#0c0c0f"/>' +
       '<stop offset="100%" stop-color="#08080a"/>' +
       '</linearGradient></defs>' +
       '<rect width="' + MW + '" height="' + extH + '" fill="url(#g)"/></svg>'
   );
 
   const i = await sharp({ create: { width: MW, height: MH, channels: 3, background: '#08080a' } })
-    .composite([{ input: crop, left: 0, top: 0 }, { input: fade, left: 0, top: cropH }])
+    .composite([
+      { input: scene, left: 0, top: 0 },
+      { input: fade, left: 0, top: mm.height },
+    ])
     .webp(QHI)
-    .toFile(path.join(OUT, to));
-
+    .toFile(path.join(OUT, mTo));
+  console.log('image  ' + mFrom.padEnd(26) + ' -> ' + mTo.padEnd(30) + i.width + 'x' + i.height + '  ' + kb(i.size));
+}
