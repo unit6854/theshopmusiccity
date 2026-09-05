@@ -5,7 +5,41 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Astro fingerprints everything it emits into /_astro (the filename changes
+# whenever the contents do), so those really are safe to pin forever.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Our images do NOT carry a content hash - hero-bg-mobile.webp keeps its name
+# every time the pipeline regenerates it. They were previously served
+# "max-age=31536000, immutable", which tells a browser never to check again:
+# anyone who had visited before would keep the old photo for a year, and even
+# a hard refresh would not always fetch the new one. ETag revalidation instead,
+# so a repeat visit costs a 304 with no body but always shows current art.
 [[headers]]
   for = "/images/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# Same reasoning: stable filenames that we overwrite in place.
+[[headers]]
+  for = "/og.png"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/favicon-32.png"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/favicon-512.png"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/apple-touch-icon.png"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
