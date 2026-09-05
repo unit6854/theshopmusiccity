@@ -1631,16 +1631,16 @@ html.has-landed .page-wipe {
      being stretched to cover the box, so all 552 columns are kept - nothing is
      cropped or zoomed - and it can then be slid vertically.
 
-     --hero-lift is that slide. Top-anchored the car sat low, overlapping the
-     paragraph; lifting the photo puts it midway between the headline above and
-     the copy below. It is a vw value so the shift tracks the photo's own
-     rendered scale, clamped so it cannot run away on a wide window. This is
-     the one number to change if the car wants to sit higher or lower.
+     --hero-lift is that slide, and it is the one number to change if the car
+     wants to sit higher or lower. It is a vw value so the shift tracks the
+     photo's own rendered scale, clamped so it cannot run away on a wide
+     window, less a flat 50px that drops the car and brings more of the lit
+     ceiling into frame above it.
 
      The photo's foot has already faded to the page black, so wherever it ends
      short of the hero's bottom edge the section's own background continues it
      with no visible join. */
-  .hero { --hero-lift: clamp(48px, 15vw, 110px); }
+  .hero { --hero-lift: clamp(0px, 15vw - 50px, 60px); }
   .hero-bg { overflow: hidden; }
   .hero-bg img {
     position: absolute;

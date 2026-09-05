@@ -1,7 +1,9 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import '../styles/fonts.css';
 import '../styles/global.css';
 import '../styles/shop.css';
+import '../styles/cursor.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import settings from '../data/settings.json';
@@ -45,12 +47,14 @@ const ogImage = new URL('/og.png', Astro.site ?? SITE);
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/favicon-512.png" sizes="512x512" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap"
-    />
+    <!-- The three faces that paint above the fold: the h1 (Saira 800), the
+         eyebrow and nav (Saira 700) and the body copy (Barlow 400). Preloading
+         them starts the download with the HTML instead of after the CSS has
+         been parsed, which is what closes the window the font flash lived in.
+         The rest of the weights load normally from fonts.css. -->
+    <link rel="preload" href="/fonts/saira-condensed-800.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/saira-condensed-700.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/barlow-400.woff2" as="font" type="font/woff2" crossorigin />
 
     <ClientRouter />
 

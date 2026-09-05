@@ -79,7 +79,7 @@ const services = servicesData.services.slice(0, 8);
                 data-frames={JSON.stringify((s.images ?? [s.image]).map(v))}
                 data-offset={i}
               >
-                <img class="card-img is-on" src={v((s.images ?? [s.image])[0])} alt="" loading="lazy" width="800" height="600" />
+                <img class="card-img is-on" src={v((s.images ?? [s.image])[0])} alt="" loading="lazy" decoding="async" width="800" height="600" />
                 <img class="card-img card-img--next" alt="" aria-hidden="true" loading="lazy" width="800" height="600" />
               </span>
               <span class="service-card-body">
@@ -124,7 +124,7 @@ const services = servicesData.services.slice(0, 8);
         {
           home.favorites.map((f) => (
             <a class="fav-card" href="/gallery">
-              <img src={v(f.image)} alt={f.title} loading="lazy" width="900" height="1125" />
+              <img src={v(f.image)} alt={f.title} loading="lazy" decoding="async" width="900" height="1125" />
               <span class="fav-meta">
                 <span class="fav-title">{f.title}</span>
                 <span class="fav-tags">{f.tags}</span>
@@ -197,7 +197,7 @@ const services = servicesData.services.slice(0, 8);
     <div class="container">
       <div class="about-grid">
         <div class="about-media">
-          <img src={v(home.about_image)} alt="Lifted Ford Super Duty built at The Shop Music City" loading="lazy" width="1440" height="1030" />
+          <img src={v(home.about_image)} alt="Lifted Ford Super Duty built at The Shop Music City" loading="lazy" decoding="async" width="1440" height="1030" />
         </div>
 
         <div class="about-copy">

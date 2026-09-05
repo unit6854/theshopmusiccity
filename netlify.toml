@@ -12,16 +12,32 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# Our images do NOT carry a content hash - hero-bg-mobile.webp keeps its name
-# every time the pipeline regenerates it. They were previously served
-# "max-age=31536000, immutable", which tells a browser never to check again:
-# anyone who had visited before would keep the old photo for a year, and even
-# a hard refresh would not always fetch the new one. ETag revalidation instead,
-# so a repeat visit costs a 304 with no body but always shows current art.
+# Image filenames are stable - the pipeline overwrites hero-bg-mobile.webp in
+# place - so these were served "max-age=0, must-revalidate" to guarantee fresh
+# art. That is correct but expensive: every repeat visit re-checked roughly
+# thirty images and paid a round trip each to be told nothing had changed.
+#
+# Every image URL now carries the ?v= stamp from src/lib/asset.ts, so changed
+# art arrives as a different URL and reaches even a warm cache. That makes it
+# safe to let the browser hold them, and a day of freshness plus a month of
+# stale-while-revalidate means a repeat visit paints from cache with no
+# blocking requests while any update is picked up in the background.
+#
+# The one rule this creates: bump ASSET_V in src/lib/asset.ts whenever the
+# artwork changes. Without a new stamp a repeat visitor can hold the old photo
+# for up to a day.
 [[headers]]
   for = "/images/*"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=2592000"
+
+# Self-hosted webfonts. The contents behind a given filename never change - a
+# new weight would be a new file - so these are safe to pin for a year, which
+# is what keeps the font flash from ever coming back on a repeat visit.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 
 # Same reasoning: stable filenames that we overwrite in place.
 [[headers]]

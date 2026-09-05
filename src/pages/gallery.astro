@@ -6,6 +6,7 @@ import Icon from '../components/Icon.astro';
 import HexBackdrop from '../components/HexBackdrop.astro';
 import CtaBand from '../components/CtaBand.astro';
 import gallery from '../data/gallery.json';
+import dims from '../data/gallery-dims.json';
 
 const counts = new Map<string, number>();
 for (const p of gallery.photos) counts.set(p.cat, (counts.get(p.cat) ?? 0) + 1);
@@ -20,6 +21,13 @@ const label = (slug: string) =>
 
 // The pipeline writes a larger copy of every photo alongside the grid version.
 const full = (src: string) => src.replace('/gallery/', '/gallery/full/');
+
+// Intrinsic size per photo, so the masonry can reserve each box before the
+// image lands instead of reflowing the column as every one arrives. Generated
+// by scripts/gallery-dims.mjs; a photo added through the CMS that is not in
+// the file yet simply renders without the attributes, exactly as before.
+const sizeOf = (src: string): { w: number; h: number } | undefined =>
+  (dims as Record<string, { w: number; h: number }>)[src];
 ---
 
 <BaseLayout
@@ -62,7 +70,14 @@ const full = (src: string) => src.replace('/gallery/', '/gallery/full/');
               data-cat-label={label(p.cat)}
               aria-label={`View larger: ${p.alt}`}
             >
-              <img src={v(p.src)} alt={p.alt} loading="lazy" />
+              <img
+                src={v(p.src)}
+                alt={p.alt}
+                loading="lazy"
+                decoding="async"
+                width={sizeOf(p.src)?.w}
+                height={sizeOf(p.src)?.h}
+              />
               <span class="masonry-zoom" aria-hidden="true">
                 <Icon name="search" size={20} />
               </span>

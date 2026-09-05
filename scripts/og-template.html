@@ -2,153 +2,77 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
     <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body {
-        width: 1200px;
-        height: 630px;
-        overflow: hidden;
-        background: #050505;
-        font-family: 'Barlow', sans-serif;
-        color: #fff;
-      }
-      .card { position: relative; width: 1200px; height: 630px; overflow: hidden; }
+      /* self-hosted, so the render never depends on a network fetch - the
+         previous template pulled Saira from Google and silently fell back when
+         it failed */
+      @font-face { font-family:'Saira Condensed'; font-weight:700; font-style:normal;
+        src:url('../public/fonts/saira-condensed-700.woff2') format('woff2'); }
+      @font-face { font-family:'Saira Condensed'; font-weight:800; font-style:normal;
+        src:url('../public/fonts/saira-condensed-800.woff2') format('woff2'); }
 
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { width:1200px; height:630px; overflow:hidden; background:#050505; color:#fff; }
+      .card { position:relative; width:1200px; height:630px; overflow:hidden; }
+
+      /* The photo is 1870x841. Scaled to the card's height it is 1401 wide, so
+         201px of it fall outside the 1200px frame. --shot-x is how much of that
+         is taken off the LEFT: at 201 the frame sat hard against the right edge
+         of the shot, which pushed the car into the middle of the card and under
+         the headline. Lowering it slides the whole shot left, carrying the car
+         to the right, and it is floored by the "The Shop" banner, which starts
+         leaving the frame below about 74. */
       .shot {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: 62% 55%;
+        position:absolute; top:0; left:calc(-1 * var(--shot-x));
+        height:630px; width:auto;
       }
       .shade {
-        position: absolute;
-        inset: 0;
+        position:absolute; inset:0;
         background:
-          linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.86) 34%, rgba(0,0,0,0.28) 62%, rgba(0,0,0,0.1) 100%),
-          radial-gradient(120% 90% at 30% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.45) 70%, rgba(0,0,0,0.85) 100%);
+          linear-gradient(90deg,
+            rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.93) 26%, rgba(0,0,0,0.78) 42%,
+            rgba(0,0,0,0.42) 56%, rgba(0,0,0,0.14) 72%, rgba(0,0,0,0.04) 100%),
+          radial-gradient(120% 90% at 28% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 72%, rgba(0,0,0,0.7) 100%);
       }
-
-      /* thin lime rules top and bottom */
       .rule-top, .rule-bottom {
-        position: absolute; left: 0; right: 0; height: 6px;
-        background: linear-gradient(90deg, #6bff4a 0%, #2fff00 45%, rgba(47,255,0,0) 92%);
-        box-shadow: 0 0 26px rgba(47,255,0,0.6);
+        position:absolute; left:0; right:0;
+        background:linear-gradient(90deg,#ff2247 0%,#e2102f 55%,#a30a20 100%);
       }
-      .rule-top { top: 0; }
-      .rule-bottom { bottom: 0; transform: scaleX(-1); }
+      .rule-top { top:0; height:6px; }
+      .rule-bottom { bottom:0; height:11px; }
 
-      .inner {
-        position: absolute;
-        inset: 0;
-        padding: 52px 70px 58px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-
-      .logo { height: 94px; width: auto; filter: drop-shadow(0 6px 18px rgba(0,0,0,0.8)); }
-      .city {
-        font-family: 'Saira Condensed', sans-serif;
-        font-weight: 700;
-        font-style: oblique 10deg;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        font-size: 18px;
-        color: #6bff4a;
-        margin: 6px 0 0 14%;
-      }
+      .inner { position:absolute; inset:0; padding:56px 70px 62px; display:flex; flex-direction:column; justify-content:center; }
+      .logo { width:430px; height:auto; display:block; filter:drop-shadow(0 6px 20px rgba(0,0,0,0.85)); }
 
       .eyebrow {
-        font-family: 'Saira Condensed', sans-serif;
-        font-weight: 700;
-        font-style: oblique 10deg;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        font-size: 21px;
-        color: #6bff4a;
-        margin-bottom: 12px;
+        margin-top:46px;
+        font-family:'Saira Condensed',sans-serif; font-weight:700; font-style:oblique 10deg;
+        text-transform:uppercase; letter-spacing:0.18em; font-size:22px; color:#ff2247;
       }
       h1 {
-        font-family: 'Saira Condensed', sans-serif;
-        font-weight: 800;
-        font-style: oblique 10deg;
-        text-transform: uppercase;
-        font-size: 96px;
-        line-height: 0.9;
-        letter-spacing: 0.005em;
-        text-shadow: 0 8px 30px rgba(0,0,0,0.8);
+        margin-top:12px;
+        font-family:'Saira Condensed',sans-serif; font-weight:800; font-style:oblique 10deg;
+        text-transform:uppercase; font-size:72px; line-height:0.96; letter-spacing:0.005em;
+        text-shadow:0 8px 30px rgba(0,0,0,0.85);
       }
-      h1 .g { color: #2fff00; display: block; }
+      h1 span { display:block; }
       .sub {
-        margin-top: 20px;
-        font-size: 25px;
-        color: #e2e5df;
-        max-width: 22ch;
-        line-height: 1.35;
+        margin-top:26px; font-family:'Courier New',Courier,monospace;
+        font-size:25px; color:#d7dae0; letter-spacing:0.01em;
       }
-
-      .foot { display: flex; align-items: center; gap: 22px; }
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 26px;
-        transform: skewX(-12deg);
-        background: linear-gradient(180deg, #52ff33 0%, #2bec00 55%, #199c00 100%);
-        border: 1px solid #6bff4a;
-        box-shadow: 0 0 34px rgba(47,255,0,0.5);
-      }
-      .pill span {
-        transform: skewX(12deg);
-        font-family: 'Saira Condensed', sans-serif;
-        font-weight: 700;
-        font-size: 30px;
-        letter-spacing: 0.03em;
-      }
-      .addr {
-        font-family: 'Saira Condensed', sans-serif;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.11em;
-        font-size: 19px;
-        color: #c9ccc6;
-        line-height: 1.45;
-      }
-      .stars { color: #6bff4a; letter-spacing: 3px; font-size: 20px; }
     </style>
   </head>
   <body>
-    <div class="card">
+    <div class="card" style="--shot-x: 90px">
       <img class="shot" src="../public/images/hero-bg.webp" alt="" />
       <div class="shade"></div>
       <div class="rule-top"></div>
       <div class="rule-bottom"></div>
-
       <div class="inner">
-        <div>
-          <img class="logo" src="../public/images/logo.webp" alt="Marshall Automotive LLC" />
-          <div class="city">Hermitage, TN</div>
-        </div>
-
-        <div>
-          <div class="eyebrow">Honest Work. Real Results.</div>
-          <h1>Built To<span class="g">Perform.</span></h1>
-          <div class="sub">Trusted auto repair in Hermitage, Tennessee.</div>
-        </div>
-
-        <div class="foot">
-          <div class="pill"><span>615-732-1894</span></div>
-          <div class="addr">
-            4235 Lebanon Pike<br />
-            <span class="stars">★★★★★</span> 4.8 on Yelp &nbsp;•&nbsp; 5-Star BBB
-          </div>
-        </div>
+        <img class="logo" src="../public/images/logo.webp" alt="The Shop Music City" />
+        <div class="eyebrow">Madison, TN &middot; Since 2019</div>
+        <h1>Window Tint &middot; Wraps<span>Detailing &middot; PPF</span></h1>
+        <div class="sub">Your friend in custom automotive.</div>
       </div>
     </div>
   </body>
