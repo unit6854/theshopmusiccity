@@ -1,4 +1,5 @@
 ---
+import { v } from '../lib/asset';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
@@ -56,12 +57,12 @@ const full = (src: string) => src.replace('/gallery/', '/gallery/full/');
               type="button"
               data-cat={p.cat}
               data-index={i}
-              data-full={full(p.src)}
+              data-full={v(full(p.src))}
               data-caption={p.alt}
               data-cat-label={label(p.cat)}
               aria-label={`View larger: ${p.alt}`}
             >
-              <img src={p.src} alt={p.alt} loading="lazy" />
+              <img src={v(p.src)} alt={p.alt} loading="lazy" />
               <span class="masonry-zoom" aria-hidden="true">
                 <Icon name="search" size={20} />
               </span>

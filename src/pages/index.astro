@@ -1,4 +1,5 @@
 ---
+import { v } from '../lib/asset';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Icon from '../components/Icon.astro';
 import Hex from '../components/Hex.astro';
@@ -16,8 +17,8 @@ const services = servicesData.services.slice(0, 8);
   <!-- ================= HERO ================= -->
   <section class="hero">
     <picture class="hero-bg">
-      <source media="(max-width: 780px)" srcset={home.hero_image_mobile} />
-      <img src={home.hero_image} alt="" fetchpriority="high" width="1440" height="817" />
+      <source media="(max-width: 780px)" srcset={v(home.hero_image_mobile)} />
+      <img src={v(home.hero_image)} alt="" fetchpriority="high" width="1440" height="817" />
     </picture>
 
     <div class="container">
@@ -75,10 +76,10 @@ const services = servicesData.services.slice(0, 8);
               <span class="glow" aria-hidden="true" />
               <span
                 class="card-media"
-                data-frames={JSON.stringify(s.images ?? [s.image])}
+                data-frames={JSON.stringify((s.images ?? [s.image]).map(v))}
                 data-offset={i}
               >
-                <img class="card-img is-on" src={(s.images ?? [s.image])[0]} alt="" loading="lazy" width="800" height="600" />
+                <img class="card-img is-on" src={v((s.images ?? [s.image])[0])} alt="" loading="lazy" width="800" height="600" />
                 <img class="card-img card-img--next" alt="" aria-hidden="true" loading="lazy" width="800" height="600" />
               </span>
               <span class="service-card-body">
@@ -123,7 +124,7 @@ const services = servicesData.services.slice(0, 8);
         {
           home.favorites.map((f) => (
             <a class="fav-card" href="/gallery">
-              <img src={f.image} alt={f.title} loading="lazy" width="900" height="1125" />
+              <img src={v(f.image)} alt={f.title} loading="lazy" width="900" height="1125" />
               <span class="fav-meta">
                 <span class="fav-title">{f.title}</span>
                 <span class="fav-tags">{f.tags}</span>
@@ -196,7 +197,7 @@ const services = servicesData.services.slice(0, 8);
     <div class="container">
       <div class="about-grid">
         <div class="about-media">
-          <img src={home.about_image} alt="Lifted Ford Super Duty built at The Shop Music City" loading="lazy" width="1440" height="1030" />
+          <img src={v(home.about_image)} alt="Lifted Ford Super Duty built at The Shop Music City" loading="lazy" width="1440" height="1030" />
         </div>
 
         <div class="about-copy">

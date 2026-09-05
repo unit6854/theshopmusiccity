@@ -1,4 +1,5 @@
 ---
+import { v } from '../lib/asset';
 import Icon from './Icon.astro';
 import settings from '../data/settings.json';
 import home from '../data/home.json';
@@ -8,7 +9,7 @@ const items = (featuredReviews.length ? featuredReviews : reviews).slice(0, 6);
 ---
 
 <section class="testimonials">
-  <img class="testimonials-bg" src={home.testimonials_image} alt="" loading="lazy" />
+  <img class="testimonials-bg" src={v(home.testimonials_image)} alt="" loading="lazy" />
   <div class="container">
     <h2>{home.testimonials_heading}</h2>
 

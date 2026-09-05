@@ -1,4 +1,5 @@
 ---
+import { v } from '../lib/asset';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
@@ -22,7 +23,7 @@ const slug = (s: string) =>
         data.services.map((s, i) => (
           <article class="svc-row" id={slug(s.title)}>
             <div class="svc-media">
-              <img src={s.image} alt={s.title} loading="lazy" width="800" height="600" />
+              <img src={v(s.image)} alt={s.title} loading="lazy" width="800" height="600" />
             </div>
             <div class="svc-copy">
               <p class="svc-num">{String(i + 1).padStart(2, '0')}</p>

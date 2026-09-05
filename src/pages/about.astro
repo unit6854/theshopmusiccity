@@ -1,4 +1,5 @@
 ---
+import { v } from '../lib/asset';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
@@ -18,7 +19,7 @@ import settings from '../data/settings.json';
     <div class="container">
       <div class="about-grid">
         <div class="about-media">
-          <img src={about.image} alt="Inside The Shop Music City" loading="lazy" width="1870" height="841" />
+          <img src={v(about.image)} alt="Inside The Shop Music City" loading="lazy" width="1870" height="841" />
         </div>
         <div class="about-copy">
           <p>{about.body_1}</p>

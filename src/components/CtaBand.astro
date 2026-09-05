@@ -1,11 +1,12 @@
 ---
+import { v } from '../lib/asset';
 import Icon from './Icon.astro';
 import settings from '../data/settings.json';
 import home from '../data/home.json';
 ---
 
 <section class="cta-band">
-  <img class="cta-bg" src={home.about_image} alt="" loading="lazy" />
+  <img class="cta-bg" src={v(home.about_image)} alt="" loading="lazy" />
   <div class="container">
     <div class="cta-box">
       <div class="cta-text">
