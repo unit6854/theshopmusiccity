@@ -162,36 +162,94 @@ for (const [from, to, maxW, opts] of large) {
   // So the photo is left completely untouched and the canvas is extended
   // BELOW it to MOBILE_ASP, narrower than any phone hero box. Cover then
   // always resolves by width: all 552 columns of the original are on screen,
-  // nothing cropped, nothing zoomed. The extension is a gradient starting from
-  // the concrete's own average tone, so there is no seam at the join, running
-  // down into the page black - the copy, button and chips sit over it.
+  // nothing cropped, nothing zoomed.
+  //
+  // How that extension is drawn matters more than it looks. It used to be a
+  // flat vertical gradient starting from the mean tone of the photo's bottom
+  // 30 rows. Two things went wrong with that. The mean of 30 rows came out at
+  // 47 while the photo's own last row sits at 76, so the join was a visible
+  // 28-level step, not the seamless start the average was meant to give. And
+  // what followed the step was a textureless wash sitting in the 30-48 range
+  // for the next sixty rows - against the lit, high-contrast concrete directly
+  // above it, that reads as a grey rectangle stuck to the foot of the photo.
+  //
+  // Nobody saw it on a desktop at a fixed window size, because the hero is
+  // only as tall as the viewport and the pad stayed below the cut. On a phone
+  // it was the first thing you saw: iOS Safari grows the viewport as the URL
+  // bar collapses, the hero grew with it, and the slab slid into view on the
+  // way down the page and back out on the way up.
+  //
+  // The extension is now the photo's own bottom rows, mirrored, so row one of
+  // the pad is row 908 of the photo - continuous by construction, at any tone,
+  // with the concrete's texture carrying on instead of stopping dead. Focus
+  // falls away over the first few rows and a black veil takes the whole thing
+  // to the page background about fifty rows in, which is roughly where the
+  // shortest phone hero ends: what the reader gets is a floor that carries on
+  // and vignettes out, and below that the flat black the copy already sat on.
+  //
+  // Both ramps are smoothstepped rather than linear. A straight fade reaches
+  // the flat colour with a slope still on it, and that slope is exactly what
+  // an OLED phone draws as a band edge - which is the artefact this whole
+  // block exists to get rid of.
   const [mFrom, mTo] = heroMobile;
   const msrc = path.join(SRC, mFrom);
   const mm = await sharp(msrc).metadata();
   const MW = mm.width;
   const MH = Math.round(MW / MOBILE_ASP);
   const extH = MH - mm.height;
+  const tail = Math.min(extH, mm.height);
 
   const scene = await sharp(msrc).png().toBuffer();
-  const floor = await sharp(scene)
-    .extract({ left: 0, top: mm.height - 30, width: MW, height: 30 })
-    .stats();
-  const [fr, fg, fb] = floor.channels.slice(0, 3).map((ch) => Math.round(ch.mean));
 
-  const fade = Buffer.from(
-    '<svg width="' + MW + '" height="' + extH + '"><defs>' +
-      '<linearGradient id="g" x1="0" y1="0" x2="0" y2="1">' +
-      '<stop offset="0%" stop-color="rgb(' + fr + ',' + fg + ',' + fb + ')"/>' +
-      '<stop offset="50%" stop-color="#0c0c0f"/>' +
-      '<stop offset="100%" stop-color="#08080a"/>' +
+  // mirrored tail: sharp's flip() is the top-bottom one (flop() is left-right)
+  const mirror = await sharp(scene)
+    .extract({ left: 0, top: mm.height - tail, width: MW, height: tail })
+    .flip()
+    .toBuffer();
+
+  // Blurred underneath, sharp on top with its alpha ramped away: the mirroring
+  // stops being readable as a mirror within a dozen rows, but the join itself
+  // stays sharp against the photo, so there is no focus step at the seam.
+  const soft = await sharp(mirror).blur(16).toBuffer();
+  const focusMask = Buffer.from(
+    '<svg width="' + MW + '" height="' + tail + '"><defs>' +
+      '<linearGradient id="f" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="#fff" stop-opacity="1"/>' +
+      '<stop offset="3%" stop-color="#fff" stop-opacity="0.82"/>' +
+      '<stop offset="6%" stop-color="#fff" stop-opacity="0.45"/>' +
+      '<stop offset="9%" stop-color="#fff" stop-opacity="0.13"/>' +
+      '<stop offset="12%" stop-color="#fff" stop-opacity="0"/>' +
+      '<stop offset="100%" stop-color="#fff" stop-opacity="0"/>' +
       '</linearGradient></defs>' +
-      '<rect width="' + MW + '" height="' + extH + '" fill="url(#g)"/></svg>'
+      '<rect width="' + MW + '" height="' + tail + '" fill="url(#f)"/></svg>'
+  );
+  const focused = await sharp(mirror)
+    .ensureAlpha()
+    .composite([{ input: focusMask, blend: 'dest-in' }])
+    .png()
+    .toBuffer();
+
+  const veil = Buffer.from(
+    '<svg width="' + MW + '" height="' + extH + '"><defs>' +
+      '<linearGradient id="v" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="#08080a" stop-opacity="0"/>' +
+      '<stop offset="4%" stop-color="#08080a" stop-opacity="0.12"/>' +
+      '<stop offset="8%" stop-color="#08080a" stop-opacity="0.38"/>' +
+      '<stop offset="12%" stop-color="#08080a" stop-opacity="0.68"/>' +
+      '<stop offset="16%" stop-color="#08080a" stop-opacity="0.89"/>' +
+      '<stop offset="20%" stop-color="#08080a" stop-opacity="0.98"/>' +
+      '<stop offset="24%" stop-color="#08080a" stop-opacity="1"/>' +
+      '<stop offset="100%" stop-color="#08080a" stop-opacity="1"/>' +
+      '</linearGradient></defs>' +
+      '<rect width="' + MW + '" height="' + extH + '" fill="url(#v)"/></svg>'
   );
 
   const i = await sharp({ create: { width: MW, height: MH, channels: 3, background: '#08080a' } })
     .composite([
       { input: scene, left: 0, top: 0 },
-      { input: fade, left: 0, top: mm.height },
+      { input: soft, left: 0, top: mm.height },
+      { input: focused, left: 0, top: mm.height },
+      { input: veil, left: 0, top: mm.height },
     ])
     .webp(QHI)
     .toFile(path.join(OUT, mTo));

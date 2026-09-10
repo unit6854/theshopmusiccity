@@ -291,9 +291,50 @@ const ogImage = new URL('/og.png', Astro.site ?? SITE);
         targets.forEach((t) => io.observe(t));
       };
 
+      // ---- park off-screen animations ------------------------------------
+      // The looping decorations (hero headline shine, flare buttons) keep the
+      // main thread painting for as long as the page is open. The headline is
+      // the costly one: a gradient sliding under background-clip: text cannot
+      // be composited, so it repaints the letterforms every frame even once
+      // the reader is three sections further down.
+      //
+      // Parking them outside the viewport is free - the frames skipped are the
+      // ones nobody can see - and a paused animation resumes where it stopped,
+      // so nothing on screen ever looks different.
+      //
+      // Viewport only, deliberately: a backgrounded tab already gets its CSS
+      // animations stopped by the browser, so a document.hidden check here
+      // would buy nothing and would freeze the page for good in any embedder
+      // that reports itself hidden while the reader is looking at it.
+      const wireIdleAnimations = () => {
+        const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (still) return; // those animations are already off
+
+        const looping = document.querySelectorAll<HTMLElement>('.hero h1 .line-2, .btn-flare');
+        if (!looping.length) return;
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              (e.target as HTMLElement).classList.toggle('anim-idle', !e.isIntersecting);
+            });
+          },
+          // a little lead-in, so an element is already running by the time its
+          // first pixel is on screen
+          { rootMargin: '200px 0px' }
+        );
+
+        looping.forEach((el) => {
+          if (el.dataset.parked) return;
+          el.dataset.parked = '1';
+          io.observe(el);
+        });
+      };
+
       const boot = () => {
         wireTilt();
         wireReveal();
+        wireIdleAnimations();
       };
       boot();
       document.addEventListener('astro:page-load', boot);

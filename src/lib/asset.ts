@@ -8,7 +8,7 @@
 // A changed URL is the only thing that reaches those clients, so every image
 // is referenced with this stamp. Bump it whenever the pipeline regenerates
 // artwork and the new files need to reach people who have already visited.
-export const ASSET_V = '20260904e';
+export const ASSET_V = '20260909a';
 
 /** Appends the cache-busting stamp to a site-root asset path. */
 export const v = (path: string | undefined | null): string =>

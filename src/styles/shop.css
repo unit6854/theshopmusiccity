@@ -1590,10 +1590,24 @@ html.has-landed .page-wipe {
      Height is tied to the viewport, never to the photo's ratio - deriving it
      from the asset made the hero 618px tall at 375px wide and 1078px at 655px,
      which pushed the copy clean off the bottom of the screen. */
+  /* svh, not dvh. dvh is the *live* viewport, and on iOS Safari that number
+     changes the whole time you are scrolling - the URL bar collapses on the
+     way down and comes back on the way up, and the hero was re-laying itself
+     out to match on every one of those frames. Because the hero is the first
+     thing on the page, every one of those relayouts moved everything below it,
+     which is the jump you feel scrolling past the hero and again coming back
+     up. It also forces the blurred scrim below to re-render at a new size
+     mid-scroll.
+
+     svh is the same measurement taken with the browser UI *shown* and then
+     left alone: it is exactly the height the hero already has when you land on
+     the page, and it does not move again. Nothing changes on desktop or in
+     device emulation, where there is no collapsing UI and svh, dvh and lvh are
+     all the same number. */
   .hero {
     aspect-ratio: auto;
     min-height: 0;
-    height: calc(100dvh - var(--header-h));
+    height: calc(100svh - var(--header-h));
     padding: 0;
     display: flex;
     align-items: stretch;
@@ -1758,3 +1772,68 @@ html.has-landed .page-wipe {
   .stat { flex-direction: column; text-align: center; gap: 8px; padding: 14px 8px; }
   .fav-card { flex-basis: 74vw; }
 }
+
+/* ---------- touch-device paint budget -----------------------------------
+   Everything below is a cost the phone was paying for an effect it cannot
+   show. Nothing here changes what is on screen; it only stops the compositor
+   doing work whose result is invisible on a touch device.
+
+   Loaded from the last stylesheet on purpose, so these win over the base
+   rules in global.css without editing them in place - lift the whole block
+   out and the old behaviour is back.
+
+   Scoped to (hover: none) and (pointer: coarse) - phones and tablets - so a
+   touch-screen laptop, which still has a real pointer, keeps the full
+   treatment. */
+@media (hover: none) and (pointer: coarse) {
+  /* The tilt is wired only for a fine pointer (see wireTilt in BaseLayout),
+     so promoting the cards is pure cost here: eight service cards each held
+     their own permanent GPU layer, on top of a preserve-3d context, for a
+     transform that never runs. */
+  .tilt { will-change: auto; }
+
+  /* A sticky, full-width backdrop-filter is re-sampled and re-blurred on
+     every scroll frame - the single most expensive thing on the page while
+     the finger is moving. The bar is already 94% opaque, so the blur was
+     contributing about six percent of a blurred image: nothing the eye can
+     find, at the price of a blur pass per frame. */
+  .site-header { backdrop-filter: none; }
+
+  /* The same trade on the hex pages. What sits behind these slabs is #040404
+     plus a wire mesh already knocked back to roughly a tenth of its opacity,
+     so a 3-4px blur of it is a difference of a couple of levels out of 255,
+     under a panel that is 72-82% opaque on top of that. */
+  .hex-page .panel,
+  .hex-page .cta-box,
+  .hex-page .faq,
+  .hex-page .service-card,
+  .hex-page .review-card { backdrop-filter: none; }
+
+  /* Paint containment: these all clip their own contents already, so this
+     only tells the engine what is already true - nothing inside can affect
+     anything outside - which lets it skip them entirely while they are off
+     screen instead of walking their subtrees. */
+  .hex-backdrop,
+  .card-media,
+  .hero-bg { contain: paint; }
+}
+
+/* ---------- off-screen animation parking --------------------------------
+   Three animations on this site loop forever: the red shine that travels
+   across the hero headline, and the lit edge and specular streak on every
+   flare button. The headline one is the expensive one - it slides a gradient
+   under background-clip: text, which no engine can hand to the compositor,
+   so the browser re-paints the letterforms every frame for as long as the
+   page is open, whether or not the headline is still on screen.
+
+   wireIdleAnimations (BaseLayout) hangs this class on those elements while
+   they are outside the viewport. Pausing is invisible by definition - the
+   only frames skipped are ones nobody was looking at - and the animation
+   picks up where it left off on the way back in.
+
+   !important because the rules being overridden set the `animation` shorthand,
+   which carries its own play-state and outranks a plain class - and because
+   the only thing this can ever do is stop an animation nobody can see. */
+.anim-idle,
+.anim-idle::before,
+.anim-idle::after { animation-play-state: paused !important; }

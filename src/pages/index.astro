@@ -323,12 +323,34 @@ const services = servicesData.services.slice(0, 8);
     rail.addEventListener('wheel', () => hold(2500), { passive: true });
     rail.addEventListener('touchstart', () => hold(3500), { passive: true });
 
-    frame = requestAnimationFrame(step);
-    document.addEventListener(
-      'astro:before-swap',
-      () => cancelAnimationFrame(frame),
-      { once: true }
-    );
+    // The drift is a rail-full-of-photos effect, and it was running from the
+    // moment the page loaded to the moment it closed: a frame every 16ms
+    // writing scrollLeft on a horizontal scroller sitting a screen and a half
+    // below the fold, forcing layout each time. Tied to the rail's own
+    // visibility it does exactly what it did before while anyone can see it,
+    // and nothing at all while they cannot.
+    const run = () => {
+      if (frame) return;
+      last = 0; // a resumed loop must not bill itself for the time it sat idle
+      frame = requestAnimationFrame(step);
+    };
+    const halt = () => {
+      if (!frame) return;
+      cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    // Viewport only - a backgrounded tab stops serving animation frames on its
+    // own, so the loop is already idle there without a second check that could
+    // strand it.
+    new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => (e.isIntersecting ? run() : halt()));
+      },
+      { rootMargin: '100px 0px' }
+    ).observe(rail);
+
+    document.addEventListener('astro:before-swap', halt, { once: true });
   };
 
   const wireCardRotation = () => {
@@ -355,14 +377,24 @@ const services = servicesData.services.slice(0, 8);
       const back = layers[1];
       if (!front || !back) return;
 
-      // warm the cache so a swap never lands on a half-loaded frame
-      frames.slice(1).forEach((src) => {
-        const pre = new Image();
-        pre.src = src;
-      });
-
       let at = 0;
       let showingFront = true;
+      let warmed = false;
+
+      // Warming the cache is what makes a swap land on a whole frame rather
+      // than a half-loaded one, but doing it at boot for every card pulled all
+      // fourteen extra shots - about a megabyte and a half, and fourteen full
+      // decodes - down the wire while the phone was still trying to paint the
+      // hero. Deferred to the card's first appearance, it costs the same but
+      // arrives when there is nothing competing with it.
+      const warm = () => {
+        if (warmed) return;
+        warmed = true;
+        frames.slice(1).forEach((src) => {
+          const pre = new Image();
+          pre.src = src;
+        });
+      };
 
       const step = () => {
         at = (at + 1) % frames.length;
@@ -379,11 +411,64 @@ const services = servicesData.services.slice(0, 8);
         else incoming.addEventListener('load', reveal, { once: true });
       };
 
+      // The rotation only means anything while the card is on screen. Run for
+      // all eight from boot and the page carries eight permanent timers, each
+      // one swapping an <img> src and cross-fading two layers of a card that
+      // is nowhere near the viewport - and it keeps doing it in a backgrounded
+      // tab. Gated on visibility it is the same effect, paid for only while
+      // someone is looking at it.
       const offset = Number(media.dataset.offset ?? 0) * 380;
-      window.setTimeout(() => {
-        const timer = window.setInterval(step, HOLD);
-        document.addEventListener('astro:before-swap', () => clearInterval(timer), { once: true });
-      }, offset);
+      let timer = 0;
+      let opening = 0;
+
+      const stop = () => {
+        window.clearTimeout(opening);
+        window.clearInterval(timer);
+        opening = 0;
+        timer = 0;
+      };
+
+      // The stagger is what keeps the grid from turning over all at once, so
+      // it is spent on the first appearance; coming back to a card that has
+      // already run picks straight up.
+      const start = () => {
+        if (timer || opening) return;
+        const begin = () => {
+          opening = 0;
+          timer = window.setInterval(step, HOLD);
+        };
+        if (warmed) begin();
+        else {
+          warm();
+          opening = window.setTimeout(begin, offset);
+        }
+      };
+
+      let visible = false;
+      const sync = () => {
+        if (visible && !document.hidden) start();
+        else stop();
+      };
+
+      new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            visible = e.isIntersecting;
+            sync();
+          });
+        },
+        { rootMargin: '150px 0px' }
+      ).observe(media);
+
+      document.addEventListener('visibilitychange', sync);
+      document.addEventListener(
+        'astro:before-swap',
+        () => {
+          stop();
+          document.removeEventListener('visibilitychange', sync);
+        },
+        { once: true }
+      );
     });
   };
 
