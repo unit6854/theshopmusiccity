@@ -119,47 +119,76 @@ const ogImage = new URL('/og.png', Astro.site ?? SITE);
         window.setTimeout(() => html.classList.remove('has-landed'), 620);
       });
 
-      // ---- heavy momentum scrolling --------------------------------------
-      // The wheel feeds a virtual target and the page eases toward it, so
-      // scrolling carries weight and glides to a stop. Touch devices keep
-      // their native inertia; the wheel is the only input taken over.
-      // Bound once - window survives view transitions.
+      // ---- light momentum scrolling --------------------------------------
+      // The wheel feeds a virtual target and the page eases toward it, so a
+      // notch lands with a short glide instead of a hard step. Tuned to be
+      // barely there: a single notch settles in roughly a fifth of a second.
+      // Touch devices keep their native inertia; the wheel is the only input
+      // taken over. Bound once - window survives view transitions.
       (() => {
         const coarse = window.matchMedia('(pointer: coarse)').matches;
         const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (coarse || still) return;
 
-        const EASE = 0.18; // fraction of the remaining gap closed per frame
+        // Fraction of the remaining gap closed per 60Hz frame. Scaled to the
+        // real frame time below, so a 144Hz monitor glides for the same
+        // fifth of a second as a 60Hz one instead of snapping twice as fast.
+        const EASE = 0.3;
+        const FRAME = 1000 / 60;
         const PUSH = 1; // wheel throw multiplier - 1 means "no extra throw"
         // How far the glide target may ever sit from the current position.
         // Without this, fast scrolling piled wheel deltas onto the target and
         // the page kept coasting long after the wheel stopped - and because
         // the target was far below, scrolling back up could not overcome it
         // and the page appeared stuck going down.
-        const LEAD = () => window.innerHeight * 0.9;
+        const LEAD = () => window.innerHeight * 0.6;
 
         // our own rAF loop does the easing, so CSS smoothing has to stand down
         document.documentElement.style.scrollBehavior = 'auto';
 
         let target = window.scrollY;
         let frame = 0;
+        let lastTick = 0;
 
         const maxScroll = () =>
           Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
 
-        const run = () => {
-          const gap = target - window.scrollY;
-          if (Math.abs(gap) < 0.5) {
+        // The browser only scrolls in whole device pixels, so at 125% or 150%
+        // display scaling scrollY moves in 0.8px or 0.67px steps. Easing by a
+        // fraction of a small gap asks for a move smaller than one of those
+        // steps, the position snaps straight back, and the gap never closes:
+        // the loop used to spin forever at 60 scrollTo calls a second, which
+        // is what jittered the sticky header and hero every time the page
+        // came to rest near the top. Two exits now: close enough, or a frame
+        // that asked to move and went nowhere.
+        const run = (now: number) => {
+          const here = window.scrollY;
+          const gap = target - here;
+          if (Math.abs(gap) < 1) {
             window.scrollTo(0, target);
             frame = 0;
             return;
           }
-          window.scrollTo(0, window.scrollY + gap * EASE);
+          // The first frame of a glide counts as one frame - the rAF
+          // timestamp is the frame's start and can predate the wheel event
+          // that started this. A long frame (tab hidden, main thread busy)
+          // is capped so the glide never lurches to catch up.
+          const dt = lastTick ? Math.min(Math.max(now - lastTick, 0), FRAME * 3) : FRAME;
+          lastTick = now;
+          const ease = 1 - Math.pow(1 - EASE, dt / FRAME);
+          window.scrollTo(0, here + gap * ease);
+          if (window.scrollY === here) {
+            window.scrollTo(0, target);
+            frame = 0;
+            return;
+          }
           frame = requestAnimationFrame(run);
         };
 
         const start = () => {
-          if (!frame) frame = requestAnimationFrame(run);
+          if (frame) return;
+          lastTick = 0;
+          frame = requestAnimationFrame(run);
         };
 
         window.addEventListener(
@@ -171,18 +200,24 @@ const ogImage = new URL('/og.png', Astro.site ?? SITE);
             // e.target is not always an Element - it can be a text node or the
             // document - and getComputedStyle throws on those, which aborted
             // the handler before preventDefault and left scrolling erratic.
+            // Only an inner scroller that can move on the wheel's own axis
+            // gets to keep it: a vertical wheel over the favourites rail,
+            // which only scrolls sideways, still glides the page rather
+            // than dropping to a raw native jump.
+            // (shift+wheel is a sideways scroll in Chrome, which still
+            // reports it on deltaY)
+            const vertical = !e.shiftKey && Math.abs(e.deltaY) >= Math.abs(e.deltaX);
             let node: Element | null = e.target instanceof Element ? e.target : null;
             while (node && node !== document.body && node !== document.documentElement) {
               const style = getComputedStyle(node);
-              if (
-                /(auto|scroll)/.test(style.overflowY + style.overflowX) &&
-                (node.scrollHeight > node.clientHeight + 1 ||
-                  node.scrollWidth > node.clientWidth + 1)
-              ) {
-                return;
-              }
+              const canY = /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1;
+              const canX = /(auto|scroll)/.test(style.overflowX) && node.scrollWidth > node.clientWidth + 1;
+              if (vertical ? canY : canX) return;
               node = node.parentElement;
             }
+            // a sideways wheel that nothing claimed is the browser's to
+            // ignore - it must not be turned into a vertical scroll
+            if (!vertical) return;
             if (document.body.classList.contains('nav-locked')) return;
 
             e.preventDefault();

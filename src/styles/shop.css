@@ -836,6 +836,31 @@ html.has-landed .page-wipe {
 }
 .brands-list li:hover { color: #cfd2d9; }
 
+/* ---------- testimonials slider ----------------------------------------
+   The base rules hide inactive slides with display: none, so the track was
+   only ever as tall as the quote on screen - and the quotes are different
+   lengths. Every seven seconds the section grew or shrank by up to 70px,
+   which shoved the whole page under anyone scrolled past it and, at the
+   very bottom, snapped the scroll position back up.
+
+   All slides now share one grid cell: the track holds the height of the
+   longest quote and the swap is a pure opacity fade that moves nothing. */
+.slide-track { display: grid; }
+.slide {
+  display: block;
+  grid-area: 1 / 1;
+  align-self: center;
+  animation: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+}
+.slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s ease, visibility 0s;
+}
+
 /* ---------- cta band ---------------------------------------------------- */
 
 .cta-band {
